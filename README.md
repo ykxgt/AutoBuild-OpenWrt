@@ -28,4 +28,4 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
 
   - 构建完成后，单击“Artifacts”页面右上角的“Actions”按钮下载二进制文件。
 
-  - 默认Web管理员IP:`192.168.5.1`，用户名`root`，无登录密码
+  - 默认Web管理员IP:`192.168.10.1`，用户名`root`，无登录密码
