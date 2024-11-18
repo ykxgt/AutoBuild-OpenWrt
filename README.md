@@ -4,6 +4,8 @@
 ![GitHub Forks](https://img.shields.io/github/forks/esirplayground/AutoBuild-OpenWrt.svg?style=flat&logo=appveyor&label=Forks&logo=github)
 ![GitHub last commit](https://img.shields.io/github/last-commit/esirplayground/AutoBuild-OpenWrt?label=Latest%20Commit&logo=github)
 
+I18N: [English](README_EN.md) | [简体中文](README.md)
+
 使用github actions 编译lede的OpenWrt [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)   
 
 在此感谢P3TERX的出色工作：https://github.com/P3TERX/Actions-OpenWrt/  
