@@ -69,6 +69,8 @@ jobs:
       working-directory: ./openwrt
       run: |
         make download -j$(nproc) V=s
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile the OpenWrt
       working-directory: ./openwrt
