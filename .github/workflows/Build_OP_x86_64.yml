@@ -126,3 +126,10 @@ jobs:
         retain_days: 1
         keep_minimum_runs: 3
         token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+            ### OpenWrt 固件信息 
+            - 使用lede的源码
+            - 默认网关: 192.168.10.1
+            - 默认用户: root
+            - 默认密码: password
+            - 已装插件: (后续再补充)
