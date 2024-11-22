@@ -12,6 +12,11 @@ on:
   repository_dispatch:
   workflow_dispatch:
 
+env:
+  UPLOAD_BIN_DIR: true
+  UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
