@@ -26,6 +26,6 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
 
   - 构建将自动启动。可以在“Actions”页面上查看进度。
 
-  - 构建完成后，单击“Artifacts”页面右上角的“Actions”按钮下载二进制文件。
+  - 构建完成后，会自动按照时间发布release，在release中下载对应格式的固件。
 
   - 默认Web管理员IP:`192.168.10.1`，用户名`root`，无登录密码
