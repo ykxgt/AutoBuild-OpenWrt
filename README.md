@@ -8,6 +8,9 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
 
 使用github actions 编译lede的OpenWrt [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)   
 
+（复刻自esirplayground/AutoBuild-OpenWrt
+对代码进行了修改，后面会添加其他设备。）
+
 在此感谢P3TERX的出色工作：https://github.com/P3TERX/Actions-OpenWrt/  
 
 在此感谢KFERMercer的出色工作：https://github.com/KFERMercer/OpenWrt-CI  
