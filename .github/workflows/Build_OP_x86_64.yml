@@ -73,7 +73,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         echo -e "$(nproc) thread build."
-        make -j$(nproc) V=s
+        make -j$(nproc)
         echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Upload bin directory
