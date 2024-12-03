@@ -96,10 +96,11 @@ jobs:
       id: artifact
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
+      run: |
+        echo "status=success" >> ${GITHUB_OUTPUT}
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
-        echo "status=success" >> ${GITHUB_OUTPUT}
  
     - name: Generate release tag
       id: tag
