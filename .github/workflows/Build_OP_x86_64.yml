@@ -88,7 +88,9 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success' 
       run: |
-        cd openwrt/bin/targets/*/*
+        cd openwrt
+        cp log.txt bin/targets/*/*
+        cd bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
