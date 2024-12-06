@@ -111,6 +111,12 @@ jobs:
         touch release.txt
         echo -e "##### OpenWrt 固件信息 \n \t- 使用lede的源码 \n \t- 默认网关: 192.168.10.1 \n \t- 默认用户: root \n \t- 默认密码: password \n \t- 已装插件: (后续再补充)" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
+      else 
+      run: |
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT       
+        touch release.txt
+        echo "编译失败，log.txt为编译日志" >> release.txt
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
