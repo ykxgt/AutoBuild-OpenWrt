@@ -94,6 +94,9 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+      else: 
+      run: |
+        echo "status=failed" >> $GITHUB_OUTPUT        
 
     - name: Upload artifact
       id: artifact
@@ -115,7 +118,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT       
         touch release.txt
-        echo "编译失败，log.txt为编译日志" >> release.txt
+        echo "编译失败，请查看log.txt编译日志" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
