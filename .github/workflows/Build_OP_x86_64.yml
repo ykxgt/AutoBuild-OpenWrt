@@ -109,7 +109,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        echo -e "##### OpenWrt 固件信息 \n \t- 使用lede的源码 \n \t- 默认网关: 192.168.10.1 \n \t- 默认用户: root \n \t- 默认密码: password \n \t- 已装插件: (后续再补充)" >> release.txt
+        echo -e "##### OpenWrt 固件信息 \n- 使用lede的源码 \n- 默认网关: 192.168.10.1 \n- 默认用户: root \n- 默认密码: password \n- 已装插件:-luci-app-accesscontrol=y \n \t-luci-app-adbyby-plus=y \n \t-luci-app-adguardhome=y \n \t-luci-app-airplay2=y \n \t-luci-app-alist=y \n \t-luci-app-argon-config=y \n \t-luci-app-aria2=y \n \t-luci-app-autoreboot=y \n \t-luci-app-commands=y \n \t-luci-app-ddns=y \n \t-luci-app-diskman=y \n \t-luci-app-dockerman=y \n \t-luci-app-filebrowser=y \n \t-luci-app-filetransfer=y \n \t-luci-app-firewall=y \n \t-luci-app-hd-idle=y \n \t-luci-app-minidlna=y \n \t-luci-app-mwan3=y \n \t-luci-app-nlbwmon=y \n \t-luci-app-onliner=y \n \t-luci-app-openclash=y \n \t-luci-app-poweroff=y \n \t-luci-app-pptp-server=y \n \t-luci-app-pushbot=y \n \t-luci-app-qbittorrent=y \n \t-luci-app-samba4=y \n \t-luci-app-serverchan=y \n \t-luci-app-ttyd=y \n \t-luci-app-turboacc=y \n \t-luci-app-upnp=y \n \t-luci-app-v2ray-server=y \n \t-luci-app-wol=y \n \t-luci-app-wrtbwmon=y \n \t" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
       else:
       run: |
