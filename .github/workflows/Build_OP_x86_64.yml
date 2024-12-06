@@ -88,15 +88,18 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success' 
       run: |
-        cd openwrt
-        cp log.txt bin/targets/*/*
-        cd bin/targets/*/*
+        cd openwrt/bin/targets/*/*
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
+
+    - name: copy log
+      id: log
       if: steps.compile.outputs.status != 'success'
       run: |
-        echo "status=failed" >> $GITHUB_OUTPUT        
+        cd openwrt
+        cp log.txt bin/targets/*/*
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload artifact
       id: artifact
@@ -113,12 +116,6 @@ jobs:
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
         echo -e "##### OpenWrt 固件信息 \n- 使用lede的源码 \n- 默认网关: 192.168.10.1 \n- 默认用户: root \n- 默认密码: password \n- 已装插件:-luci-app-accesscontrol=y \n \t-luci-app-adbyby-plus=y \n \t-luci-app-adguardhome=y \n \t-luci-app-airplay2=y \n \t-luci-app-alist=y \n \t-luci-app-argon-config=y \n \t-luci-app-aria2=y \n \t-luci-app-autoreboot=y \n \t-luci-app-commands=y \n \t-luci-app-ddns=y \n \t-luci-app-diskman=y \n \t-luci-app-dockerman=y \n \t-luci-app-filebrowser=y \n \t-luci-app-filetransfer=y \n \t-luci-app-firewall=y \n \t-luci-app-hd-idle=y \n \t-luci-app-minidlna=y \n \t-luci-app-mwan3=y \n \t-luci-app-nlbwmon=y \n \t-luci-app-onliner=y \n \t-luci-app-openclash=y \n \t-luci-app-poweroff=y \n \t-luci-app-pptp-server=y \n \t-luci-app-pushbot=y \n \t-luci-app-qbittorrent=y \n \t-luci-app-samba4=y \n \t-luci-app-serverchan=y \n \t-luci-app-ttyd=y \n \t-luci-app-turboacc=y \n \t-luci-app-upnp=y \n \t-luci-app-v2ray-server=y \n \t-luci-app-wol=y \n \t-luci-app-wrtbwmon=y \n \t" >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
-      if: steps.organize.outputs.status == 'failed'
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT       
-        touch release.txt
-        echo "编译失败，请查看log.txt编译日志" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
