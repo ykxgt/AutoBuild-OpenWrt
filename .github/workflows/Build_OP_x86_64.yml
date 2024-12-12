@@ -139,8 +139,8 @@ jobs:
         cd openwrt
         cp log.txt bin/targets/*/*
         cd bin/targets/*/*
-        rm profiles.json
-        rm 
+        rm feeds.buildinfo
+        rm version.buildinfo
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload artifact
