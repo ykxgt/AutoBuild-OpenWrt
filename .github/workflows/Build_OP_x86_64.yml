@@ -69,6 +69,19 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
+        
+    - name: Update and Install feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+        
+    - name: Download package
+      working-directory: ./openwrt
+      run: |
+        make download -j$(nproc)
+        find dl -size -1024c -exec ls -l {} \;
+        find dl -size -1024c -exec rm -f {} \;
 
     - name: Cache
       uses: stupidloud/cachewrtbuild@main
@@ -77,19 +90,6 @@ jobs:
         mixkey: ${{ matrix.target }}
         clean: ${{ contains(github.event.action, 'nocache') }}
         prefix: ${{ github.workspace }}/openwrt
-        
-#    - name: Update and Install feeds
-#      working-directory: ./openwrt
-#      run: |
-#        ./scripts/feeds update -a
-#        ./scripts/feeds install -a
-        
-#    - name: Download package
-#      working-directory: ./openwrt
-#      run: |
-#        make download -j$(nproc)
-#        find dl -size -1024c -exec ls -l {} \;
-#       find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile the OpenWrt
       id: compile
