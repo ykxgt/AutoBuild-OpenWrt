@@ -9,7 +9,7 @@ env:
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
-  matrix.target: x86_64
+  matrix.target: ${{ github.event.client_payload.target }}
   
 
 jobs:
