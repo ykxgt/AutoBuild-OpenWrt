@@ -86,7 +86,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         echo -e "$(nproc) thread build."
-        make -j$(nproc) | tee log.txt
+        make -j1 V=s
         echo "status=success" >> ${GITHUB_OUTPUT}
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -105,18 +105,6 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: copy log
-      id: log
-      continue-on-error: true
-      if: steps.compile.outputs.status != 'success'
-      run: |
-        cd openwrt
-        cp log.txt bin/targets/*/*/log.txt
-        cd bin/targets/*/*
-        rm feeds.buildinfo
-        rm version.buildinfo
-        echo "status=success" >> $GITHUB_OUTPUT
-
     - name: Upload artifact
       id: artifact
       uses: actions/upload-artifact@main
@@ -130,16 +118,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        echo -e "##### OpenWrt 固件信息 \n- 使用lede的源码 \n- 默认网关: 192.168.10.1 \n- 默认用户: root \n- 默认密码: password \n- 已装插件:-luci-app-accesscontrol=y \n \t-luci-app-adbyby-plus=y \n \t-luci-app-adguardhome=y \n \t-luci-app-airplay2=y \n \t-luci-app-alist=y \n \t-luci-app-argon-config=y \n \t-luci-app-aria2=y \n \t-luci-app-autoreboot=y \n \t-luci-app-commands=y \n \t-luci-app-ddns=y \n \t-luci-app-diskman=y \n \t-luci-app-dockerman=y \n \t-luci-app-filebrowser=y \n \t-luci-app-filetransfer=y \n \t-luci-app-firewall=y \n \t-luci-app-hd-idle=y \n \t-luci-app-minidlna=y \n \t-luci-app-mwan3=y \n \t-luci-app-nlbwmon=y \n \t-luci-app-onliner=y \n \t-luci-app-openclash=y \n \t-luci-app-poweroff=y \n \t-luci-app-pptp-server=y \n \t-luci-app-pushbot=y \n \t-luci-app-qbittorrent=y \n \t-luci-app-samba4=y \n \t-luci-app-serverchan=y \n \t-luci-app-ttyd=y \n \t-luci-app-turboacc=y \n \t-luci-app-upnp=y \n \t-luci-app-v2ray-server=y \n \t-luci-app-wol=y \n \t-luci-app-wrtbwmon=y \n \t" >> release.txt
-        echo "status=success" >> $GITHUB_OUTPUT
-
-    - name: Generate failed release tag
-      id: ftag
-      if: steps.log.outputs.status == 'success'
-      run: |
-        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT       
-        touch release.txt
-        echo "编译失败，请查看log.txt编译日志排查原因" >> release.txt
+        echo -e "##### OpenWrt 固件信息 \n- 使用lede的源码 \n- 默认网关: 192.168.10.1 \n- 默认用户: root \n- 默认密码: password \n- 已装插件:\n-luci-app-accesscontrol=y \n \t-luci-app-adbyby-plus=y \n \t-luci-app-adguardhome=y \n \t-luci-app-airplay2=y \n \t-luci-app-alist=y \n \t-luci-app-argon-config=y \n \t-luci-app-aria2=y \n \t-luci-app-autoreboot=y \n \t-luci-app-commands=y \n \t-luci-app-ddns=y \n \t-luci-app-diskman=y \n \t-luci-app-dockerman=y \n \t-luci-app-filebrowser=y \n \t-luci-app-filetransfer=y \n \t-luci-app-firewall=y \n \t-luci-app-hd-idle=y \n \t-luci-app-minidlna=y \n \t-luci-app-mwan3=y \n \t-luci-app-nlbwmon=y \n \t-luci-app-onliner=y \n \t-luci-app-openclash=y \n \t-luci-app-poweroff=y \n \t-luci-app-pptp-server=y \n \t-luci-app-pushbot=y \n \t-luci-app-qbittorrent=y \n \t-luci-app-samba4=y \n \t-luci-app-serverchan=y \n \t-luci-app-ttyd=y \n \t-luci-app-turboacc=y \n \t-luci-app-upnp=y \n \t-luci-app-v2ray-server=y \n \t-luci-app-wol=y \n \t-luci-app-wrtbwmon=y \n \t" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
@@ -151,17 +130,6 @@ jobs:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
-
-    - name: Upload log to release
-      uses: softprops/action-gh-release@v1
-      if: steps.ftag.outputs.status == 'success' && !cancelled()
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ steps.ftag.outputs.release_tag }}
-        body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
-
 
     - name: Delete workflow runs
       uses: LeeHe-gif/delete-workflow-runs@main
