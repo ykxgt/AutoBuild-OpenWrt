@@ -67,12 +67,11 @@ jobs:
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt && make defconfig
         
-    - name: Update and Install feeds
-      working-directory: ./openwrt
-      run: |
-        ./scripts/feeds update -a
-        sleep 5
-        ./scripts/feeds install -a
+    - name: Update feeds
+      run: cd openwrt/ && ./scripts/feeds update -a
+
+    - name: Install feeds
+      run: cd openwrt/ && ./scripts/feeds install -a
         
     - name: Download package
       working-directory: ./openwrt
@@ -105,7 +104,7 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Upload artifact
+    - name: Upload firmware directory
       id: artifact
       uses: actions/upload-artifact@main
       with:
