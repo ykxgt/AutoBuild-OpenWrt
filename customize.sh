@@ -12,4 +12,3 @@ sed -i 's/192.168.1.1/192.168.10.1/g' openwrt/package/base-files/files/bin/confi
 sed -i 's/$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.//g' openwrt/package/lean/default-settings/files/zzz-default-settings
 
 #3. Replace with JerryKuKu’s Argon
-#rm openwrt/package/lean/luci-theme-argon -rf
