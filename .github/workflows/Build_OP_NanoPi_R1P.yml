@@ -102,7 +102,7 @@ jobs:
       id: tag
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
-          echo "::set-output name=release_tag::$(date +"%Y.%m.%d-%H%M")"
+          echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
           if [[ "${{ inputs.source_branch }}" == *"openwrt"* ]]; then
           echo -e "lede源码编译nanopi R1PLUS" >> release.txt
