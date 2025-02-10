@@ -61,10 +61,10 @@ jobs:
       env:
         CONFIG_FILE: 'NanoPi_R1P.config'
       run: |
-        [[ -d "files" ]] && mv -f files openwrt/files
-        [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
-        cd openwrt && cat .config
+        cd openwrt && rm .config
+        touch .config && cat ${CONFIG_FILE} >> .config
+        cat .config
         
     - name: Download package
       id: package
