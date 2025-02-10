@@ -64,6 +64,7 @@ jobs:
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         chmod +x ./customize.sh && ./customize.sh
+        cd openwrt && cat .config
         
     - name: Download package
       id: package
