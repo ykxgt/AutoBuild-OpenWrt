@@ -59,7 +59,7 @@ jobs:
 
     - name: Configuration Customization - Build_NanoPi_R1P
       env:
-        CONFIG_FILE: 'NanoPi_R1P.config'
+        CONFIG_FILE: 'Nanopi_R1P.config'
       run: |
         chmod +x ./customize.sh && ./customize.sh
         cd openwrt
