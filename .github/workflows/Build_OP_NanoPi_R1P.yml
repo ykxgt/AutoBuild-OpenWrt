@@ -62,7 +62,7 @@ jobs:
         CONFIG_FILE: 'NanoPi_R1P.config'
       run: |
         chmod +x ./customize.sh && ./customize.sh
-        cd openwrt && rm .config
+        cd openwrt
         touch .config && cat ${CONFIG_FILE} >> .config
         cat .config
         
