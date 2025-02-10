@@ -7,6 +7,7 @@ on:
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
+  CONFIG_FILE: 'Nanopi_R1P.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -78,8 +79,6 @@ jobs:
         ./scripts/feeds install -a
 
     - name: Configuration Customization - Build_NanoPi_R1P
-      env:
-        CONFIG_FILE: 'Nanopi_R1P.config'
       run: |
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
