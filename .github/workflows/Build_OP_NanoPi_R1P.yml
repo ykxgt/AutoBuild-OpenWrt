@@ -110,8 +110,7 @@ jobs:
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          if [[ "${{ inputs.source_branch }}" == *"openwrt"* ]]; then
-          echo -e "lede源码编译nanopi R1PLUS" >> release.txt
+          echo -e "使用lede源码编译nanopi R1PLUS的固件" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
