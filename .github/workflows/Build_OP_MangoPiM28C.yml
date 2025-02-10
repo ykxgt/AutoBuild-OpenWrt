@@ -22,6 +22,17 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
 
+    - name: Free disk space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: true
+        docker-images: false
+        swap-storage: true
+
     - name: Initialization environment
       id: init
       env:
@@ -57,6 +68,15 @@ jobs:
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+
+    - name: Free up disk space
+      env:
+        DEBIAN_FRONTEND: noninteractive
+      run: |
+        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/staging_dir /mnt/openwrt/build_dir
+        ln -sf /mnt/openwrt/dl openwrt/dl
+        ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
+        ln -sf /mnt/openwrt/build_dir openwrt/build_dir     
 
     - name: Configuration Customization - Build_MangoPiM28C
       run: |
