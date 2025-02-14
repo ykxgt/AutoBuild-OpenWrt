@@ -1,4 +1,4 @@
-name: Build_MangoPiM28C
+name: Build_MangoPi_M28C
 
 # Add a button to trigger the workflow
 on: 
@@ -7,7 +7,7 @@ on:
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'MangoPiM28C.config'
+  CONFIG_FILE: 'MangoPi_M28C.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -78,7 +78,7 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
 
-    - name: Configuration Customization - Build_MangoPiM28C
+    - name: Configuration Customization - Build_MangoPi_M28C
       run: |
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
@@ -129,7 +129,7 @@ jobs:
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo -e "使用lede源码编译MangoPiM28C的固件" >> release.txt
+          echo -e "使用lede源码编译MangoPi_M28C的固件" >> release.txt
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
