@@ -9,15 +9,14 @@ on:
       device_config:
         description: "Select your device"
         required: false
-        default: "CMCC_RAX3000M_NAND.config"
+        default: "nand"
         type: choice
         options:
-          - CMCC_RAX3000M_EMMC.config
-          - CMCC_RAX3000M_NAND.config
+          - nand
+          - emmc
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: '{{ inputs.device_config }}'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -91,6 +90,14 @@ jobs:
 
     - name: Configuration Customization - Build_CMCC_RAX3000M
       run: |
+                if [[ "${{ inputs.source_branch }}" == *"nand"* ]]; then
+            CONFIG_FILE="CMCC_RAX3000M_NAND.config"
+        elif [[ "${{ inputs.source_branch }}" == *"emmc"* ]]; then
+            CONFIG_FILE="CMCC_RAX3000M_EMMC.config"
+        else
+            echo "worng device!"
+            exit 1
+        fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
