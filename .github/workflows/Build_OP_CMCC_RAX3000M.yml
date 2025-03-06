@@ -84,6 +84,7 @@ jobs:
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        cd openwrt && make defconfig
         
     - name: Download package
       id: package
@@ -110,7 +111,7 @@ jobs:
 
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
