@@ -90,7 +90,7 @@ jobs:
 
     - name: Configuration Customization - Build_CMCC_RAX3000M
       run: |
-                if [[ "${{ inputs.source_branch }}" == *"nand"* ]]; then
+        if [[ "${{ inputs.source_branch }}" == *"nand"* ]]; then
             CONFIG_FILE="CMCC_RAX3000M_NAND.config"
         elif [[ "${{ inputs.source_branch }}" == *"emmc"* ]]; then
             CONFIG_FILE="CMCC_RAX3000M_EMMC.config"
