@@ -1,18 +1,20 @@
 name: Build_CMCC_RAX3000M
 
 # Add a button to trigger the workflow
-on: 
+
+on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
-    device_config:
-      description: "Select your device"
-      required: false
-      default: "CMCC_RAX3000M_NAND.config"
-      type: choice
-      options:
-        - CMCC_RAX3000M_EMMC.config
-        - CMCC_RAX3000M_NAND.config
+      device_config:
+        description: "Select your device"
+        required: false
+        default: "CMCC_RAX3000M_NAND.config"
+        type: choice
+        options:
+          - CMCC_RAX3000M_EMMC.config
+          - CMCC_RAX3000M_NAND.config
+
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   CONFIG_FILE: '{{ inputs.device_config }}'
