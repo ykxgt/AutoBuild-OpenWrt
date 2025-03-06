@@ -4,10 +4,18 @@ name: Build_CMCC_RAX3000M
 on: 
   repository_dispatch:
   workflow_dispatch:
-  
+      inputs:
+      source_branch:
+        description: "Select your device"
+        required: false
+        default: "CMCC_RAX3000M_NAND.config"
+        type: choice
+        options:
+          - CMCC_RAX3000M_EMMC.config
+          - CMCC_RAX3000M_NAND.config
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'CMCC_RAX3000M.config'
+  CONFIG_FILE: '{{ inputs.source_branch }}'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
