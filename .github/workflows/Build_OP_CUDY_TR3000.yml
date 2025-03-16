@@ -1,13 +1,22 @@
 name: Build_CUDY_TR3000
 
 # Add a button to trigger the workflow
-on: 
+
+on:
   repository_dispatch:
   workflow_dispatch:
-  
+    inputs:
+      device_config:
+        description: "Select your device"
+        required: false
+        default: "U-Boot"
+        type: choice
+        options:
+          - U-Boot
+          - V1
+
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'cudy_tr3000.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -62,6 +71,7 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
+        echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
 
     - name: Free up disk space
       env:
@@ -77,12 +87,22 @@ jobs:
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
+        ./scripts/feeds install -a -f -p modem
 
     - name: Configuration Customization - Build_CUDY_TR3000
       run: |
+        if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
+            CONFIG_FILE="CUDY_TR3000-UBOOT.config"
+        elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
+            CONFIG_FILE="CUDY_TR3000_V1.config"
+        else
+            echo "worng device!"
+            exit 1
+        fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        cd openwrt && make defconfig
         
     - name: Download package
       id: package
@@ -97,7 +117,7 @@ jobs:
       run: |
         cd openwrt/
         echo -e "$(nproc) thread compile"
-        make -j$(nproc) V=s
+        make -j$(nproc)
         echo "status=success" >> ${GITHUB_OUTPUT}
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
@@ -125,11 +145,19 @@ jobs:
 
     - name: Generate release tag
       id: tag
-      if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
+      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo -e "使用lede源码编译MangoPi_M28C的固件" >> release.txt
+          if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
+            echo -e "使用lede源码编译的CUDY_TR3000_U-Boot固件" >> release.txt
+        elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
+            echo -e "使用lede源码编译的CUDY_TR3000_V1固件" >> release.txt
+        else
+            echo "worng device!"
+            exit 1
+        fi
+          
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
