@@ -4,11 +4,17 @@ name: Build_phicomm_k2g
 on: 
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      source_branch:
+        description: "Select the source branch"
+        required: false
+        default: "lede-master"
+        type: choice
+        options:
+          - lede-master
+          - immortalwrt-master  
   
 env:
-  REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  CONFIG_FILE: 'phicomm_k2g.config'
-  REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -60,7 +66,19 @@ jobs:
       id: codes
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+          if [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
+              REPO_URL="https://github.com/coolsnowwolf/lede"
+              REPO_BRANCH="master"
+          elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
+              REPO_URL="https://github.com/immortalwrt/immortalwrt"
+              REPO_BRANCH="master"
+          else
+              echo "Unknown source code repository."
+              exit 1
+          fi      
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+          cd openwrt
+          echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
 
     - name: Free up disk space
       env:
@@ -79,7 +97,14 @@ jobs:
 
     - name: Configuration Customization - Build_phicomm_k2g
       run: |
-        chmod +x ./imm-customize.sh && ./imm-customize.sh
+        if [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
+          chmod +x ./customize.sh && ./customize.sh
+        elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
+          chmod +x ./imm-customize.sh && ./imm-customize.sh   
+        else
+          echo "Unknown source code repository."
+          exit 1
+        fi      
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         cd openwrt && make defconfig
@@ -129,7 +154,14 @@ jobs:
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo -e "使用immortalwrt源码编译phicomm_k2g的固件" >> release.txt
+          if [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
+            echo -e "使用lede源码编译phicomm_k2g的固件" >> release.txt
+          elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
+            echo -e "使用immortalwrt源码编译phicomm_k2g的固件" >> release.txt
+          else
+            echo "Unknown source code repository."
+            exit 1
+          fi      
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
