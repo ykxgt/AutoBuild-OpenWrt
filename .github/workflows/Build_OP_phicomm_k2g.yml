@@ -99,8 +99,10 @@ jobs:
       run: |
         if [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
           chmod +x ./customize.sh && ./customize.sh
+          CONFIG_FILE="lede-phicomm-k2g.config"
         elif [[ "${{ inputs.source_branch }}" == *"immortalwrt"* ]]; then
           chmod +x ./imm-customize.sh && ./imm-customize.sh   
+          CONFIG_FILE="imm_phicomm_k2g.config"
         else
           echo "Unknown source code repository."
           exit 1
