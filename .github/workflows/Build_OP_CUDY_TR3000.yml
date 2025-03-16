@@ -92,12 +92,12 @@ jobs:
     - name: Configuration Customization - Build_CUDY_TR3000
       run: |
         if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
-          CONFIG_FILE="CUDY_TR3000-UBOOT.config"
+            CONFIG_FILE="CUDY_TR3000-UBOOT.config"
         elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
-          CONFIG_FILE="CUDY_TR3000_V1.config"
+            CONFIG_FILE="CUDY_TR3000_V1.config"
         else
-          echo "worng device!"
-          exit 1
+            echo "worng device!"
+            exit 1
         fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
@@ -151,12 +151,12 @@ jobs:
           touch release.txt
           if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
             echo -e "使用lede源码编译的CUDY_TR3000_U-Boot固件" >> release.txt
-        elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
+          elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
             echo -e "使用lede源码编译的CUDY_TR3000_V1固件" >> release.txt
-        else
+          else
             echo "worng device!"
             exit 1
-        fi
+          fi
           
           echo "status=success" >> $GITHUB_OUTPUT
 
