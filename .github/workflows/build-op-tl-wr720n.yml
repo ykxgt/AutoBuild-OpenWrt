@@ -44,9 +44,11 @@ jobs:
         make
         sudo make install
         python -v
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Initialization environment
       id: init
+      if: ${{ steps.py27.outputs.status }} == 'success' && !cancelled()
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
