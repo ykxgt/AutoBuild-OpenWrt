@@ -95,6 +95,8 @@ jobs:
         chmod +x ./op-customize.sh && ./op-customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        cd openwrt/
+        make defconfig
         
     - name: Download package
       id: package
