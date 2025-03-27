@@ -25,7 +25,8 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
     
 **2. 编译固件**
   - 点击repo顶部的 `[.github/workflows]`文件夹，您可以看到几个工作流文件，每个文件对应一个特定架构的设备。
-  - ***`Action`*** 点击菜单上的“run workflow”，点击左侧您要编译的设备，然后转到右侧的“run workflow”按钮，点击下拉菜单上的绿色按钮“运行工作流“就行了！！！
+
+  - 点击进入***`Action`*** 能看到左侧的 “All workflow”，选择列表里您要编译的设备，然后转到右侧的“run workflow”按钮，点击下拉菜单上的绿色按钮“运行工作流“就行了！！！
 
   - 构建将自动启动。可以在“Actions”页面上查看进度。
 
