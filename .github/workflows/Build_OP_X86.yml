@@ -1,9 +1,17 @@
 name: Build_X86
 
-# Add a button to trigger the workflow
-on: 
+on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      device_config:
+        description: "Select your device"
+        required: false
+        default: "x86"
+        type: choice
+        options:
+          - x86
+          - co-x86
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -82,6 +90,14 @@ jobs:
 
     - name: Configuration Customization - Build_X86
       run: |
+        if [[ "${{ inputs.device_config }}" == *"x86"* ]]; then
+            CONFIG_FILE="x86.config"
+        elif [[ "${{ inputs.device_config }}" == *"co-x86"* ]]; then
+            CONFIG_FILE="co-x86.config"
+        else
+            echo "worng device!"
+            exit 1
+        fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
