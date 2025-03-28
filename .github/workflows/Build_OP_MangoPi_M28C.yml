@@ -4,10 +4,17 @@ name: Build_MangoPi_M28C
 on: 
   repository_dispatch:
   workflow_dispatch:
-  
+    inputs:
+      device_config:
+        description: "Select kernel"
+        required: false
+        default: "latest"
+        type: choice
+        options:
+          - latest
+          - 6.12.18
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'MangoPi_M28C.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -82,6 +89,14 @@ jobs:
 
     - name: Configuration Customization - Build_MangoPi_M28C
       run: |
+        if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
+            CONFIG_FILE="MangoPi_M28C.config"
+        elif [[ "${{ inputs.device_config }}" == *"6.12.18"* ]]; then
+            CONFIG_FILE="MangoPi_M28C-6.12.18.config"
+        else
+            echo "worng kernel!"
+            exit 1
+        f      
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
@@ -132,7 +147,14 @@ jobs:
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo -e "使用lede源码编译MangoPi_M28C的固件" >> release.txt
+          if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
+             echo -e "使用lede源码编译最新内核MangoPi_M28C的固件" >> release.txt
+          elif [[ "${{ inputs.device_config }}" == *"6.12.18"* ]]; then
+             echo -e "使用lede源码编译6.12.18内核MangoPi_M28C的固件" >> release.txt
+          else
+            echo "worng kernel!"
+            exit 1
+          f 
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
