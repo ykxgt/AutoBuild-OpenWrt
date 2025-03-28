@@ -96,7 +96,7 @@ jobs:
         else
             echo "worng kernel!"
             exit 1
-        f      
+        fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
