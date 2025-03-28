@@ -90,6 +90,9 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a -f -p modem
+        ./scripts/feeds install -d y -p istore luci-app-store
+        ./scripts/feeds install -a -p nas
+        ./scripts/feeds install -a -p nas_luci
 
     - name: Configuration Customization - Build_X86
       run: |
@@ -151,7 +154,14 @@ jobs:
       run: |
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
-          echo -e "使用lede源码编译co-X86固件" >> release.txt
+          if [[ "${{ inputs.device_config }}" == *"x86"* ]]; then
+              echo -e "使用lede源码编译X86固件" >> release.txt
+          elif [[ "${{ inputs.device_config }}" == *"co-x86"* ]]; then
+              echo -e "使用lede源码编译co-X86固件" >> release.txt
+          else
+              echo "worng device!"
+              exit 1
+          fi
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
