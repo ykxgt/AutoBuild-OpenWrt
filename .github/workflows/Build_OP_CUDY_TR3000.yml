@@ -111,18 +111,20 @@ jobs:
         if [[ "${{ inputs.REPO_URL }}" == *"lede"* ]]; then
           if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
               CONFIG_FILE="CUDY_TR3000-UBOOT.config"
+              chmod +x ./customize.sh && ./customize.sh
           elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
               CONFIG_FILE="CUDY_TR3000_V1.config"
+              chmod +x ./customize.sh && ./customize.sh
           else
               echo "worng device!"
               exit 1
           fi
         elif [[ "${{ inputs.REPO_URL }}" == *"imm"* ]]; then
               CONFIG_FILE="IMM-CUDY_TR3000.CONFIG"
+              chmod +x ./imm-customize.sh && ./imm-customize.sh
         else
             exit 1
         fi
-        chmod +x ./imm-customize.sh && ./imm-customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         cd openwrt && make defconfig
