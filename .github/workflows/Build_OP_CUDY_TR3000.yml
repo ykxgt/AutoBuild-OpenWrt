@@ -90,7 +90,6 @@ jobs:
             echo "worng REPO_URL!"
             exit 1
         fi
-        cd openwrt
 
     - name: Free up disk space
       env:
