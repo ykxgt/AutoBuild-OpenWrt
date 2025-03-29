@@ -79,19 +79,16 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         if [[ "${{ inputs.REPO_URL }}" == *"lede"* ]]; then
-            REPO_URL: https://github.com/coolsnowwolf/lede
-            git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+            git clone --depth 1 https://github.com/coolsnowwolf/lede -b $REPO_BRANCH openwrt
             echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
         elif [[ "${{ inputs.REPO_URL }}" == *"imm"* ]]; then
-              REPO_URL: https://github.com/immortalwrt/immortalwrt
-              git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+              git clone --depth 1 https://github.com/immortalwrt/immortalwrt -b $REPO_BRANCH openwrt
               git clone https://github.com/xiaorouji/openwrt-passwall2 openwrt/package/feeds/
         else
             echo "worng REPO_URL!"
             exit 1
         fi
         cd openwrt
-        
 
     - name: Free up disk space
       env:
