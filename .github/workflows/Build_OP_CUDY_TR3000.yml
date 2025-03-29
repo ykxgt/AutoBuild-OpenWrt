@@ -6,17 +6,26 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
+
+      REPO_URL:
+        description: "Select REPO URL"
+        required: false
+        default: "lede"
+        type: choice
+        options:
+          - lede
+          - imm
+  
       device_config:
         description: "Select your device"
         required: false
         default: "U-Boot"
         type: choice
         options:
-          - U-Boot
-          - V1
+           - U-Boot
+           - V1
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -69,9 +78,20 @@ jobs:
       id: codes
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
-        git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        if [[ "${{ inputs.REPO_URL }}" == *"lede"* ]]; then
+            REPO_URL: https://github.com/coolsnowwolf/lede
+            git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+            echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
+        elif [[ "${{ inputs.REPO_URL }}" == *"imm"* ]]; then
+              REPO_URL: https://github.com/immortalwrt/immortalwrt
+              git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+              git clone https://github.com/xiaorouji/openwrt-passwall2 openwrt/package/feeds/
+        else
+            echo "worng REPO_URL!"
+            exit 1
+        fi
         cd openwrt
-        echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
+        
 
     - name: Free up disk space
       env:
@@ -91,12 +111,19 @@ jobs:
 
     - name: Configuration Customization - Build_CUDY_TR3000
       run: |
-        if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
-            CONFIG_FILE="CUDY_TR3000-UBOOT.config"
-        elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
-            CONFIG_FILE="CUDY_TR3000_V1.config"
+
+        if [[ "${{ inputs.REPO_URL }}" == *"lede"* ]]; then
+          if [[ "${{ inputs.device_config }}" == *"U-Boot"* ]]; then
+              CONFIG_FILE="CUDY_TR3000-UBOOT.config"
+          elif [[ "${{ inputs.device_config }}" == *"V1"* ]]; then
+              CONFIG_FILE="CUDY_TR3000_V1.config"
+          else
+              echo "worng device!"
+              exit 1
+          fi
+        elif [[ "${{ inputs.REPO_URL }}" == *"imm"* ]]; then
+              CONFIG_FILE="IMM-CUDY_TR3000.CONFIG"
         else
-            echo "worng device!"
             exit 1
         fi
         chmod +x ./customize.sh && ./customize.sh
