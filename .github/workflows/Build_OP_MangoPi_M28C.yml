@@ -12,7 +12,7 @@ on:
         type: choice
         options:
           - latest
-          - 6.12.18
+          - 6.12.20
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
@@ -92,7 +92,7 @@ jobs:
       run: |
         if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
             CONFIG_FILE="mangopi_m28c.config"
-        elif [[ "${{ inputs.device_config }}" == *"6.12.18"* ]]; then
+        elif [[ "${{ inputs.device_config }}" == *"6.12.20"* ]]; then
             CONFIG_FILE="MangoPi_M28C-6.12.18.config"
         else
             echo "worng kernel!"
@@ -150,8 +150,8 @@ jobs:
           touch release.txt
           if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
              echo -e "使用lede源码编译最新内核MangoPi_M28C的固件" >> release.txt
-          elif [[ "${{ inputs.device_config }}" == *"6.12.18"* ]]; then
-             echo -e "使用lede源码编译6.12.18内核MangoPi_M28C的固件" >> release.txt
+          elif [[ "${{ inputs.device_config }}" == *"6.12.20"* ]]; then
+             echo -e "使用lede源码编译6.12.20内核MangoPi_M28C的固件" >> release.txt
           else
             echo "worng kernel!"
             exit 1
