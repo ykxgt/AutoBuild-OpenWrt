@@ -155,7 +155,7 @@ jobs:
           else
             echo "worng kernel!"
             exit 1
-          f 
+          fi
           echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
