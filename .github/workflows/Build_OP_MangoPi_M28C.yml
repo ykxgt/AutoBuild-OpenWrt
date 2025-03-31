@@ -71,6 +71,7 @@ jobs:
         cd openwrt
         echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
         git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+        git clone https://github.com/selfcan/luci-app-homebox.git
 
     - name: Free up disk space
       env:
