@@ -92,7 +92,7 @@ jobs:
         if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
             CONFIG_FILE="mangopi_m28c.config"
         elif [[ "${{ inputs.device_config }}" == *"6.12.20"* ]]; then
-            CONFIG_FILE="MangoPi_M28C-6.12.18.config"
+            CONFIG_FILE="MangoPi_M28C-6.12.20.config"
         else
             echo "worng kernel!"
             exit 1
