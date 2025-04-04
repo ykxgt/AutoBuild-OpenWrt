@@ -88,11 +88,6 @@ jobs:
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         rm openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
         cp patches/luci.c openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
-        cd openwrt/include/
-        touch kernel-version.mk
-        echo "-----------------------------------"
-        cat kernel-version.mk
-        echo "-----------------------------------"
 
     - name: Download package
       id: package
