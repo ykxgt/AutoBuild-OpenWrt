@@ -4,6 +4,9 @@ name: Build_REDME_AX3000
 on: 
   repository_dispatch:
   workflow_dispatch:
+  
+  watch:
+    types: [started]
 
 env:
   REPO_URL: https://github.com/hzyitc/openwrt-redmi-ax3000
