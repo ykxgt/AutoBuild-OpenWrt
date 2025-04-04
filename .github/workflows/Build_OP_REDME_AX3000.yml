@@ -8,7 +8,7 @@ on:
 env:
   REPO_URL: https://github.com/LeeHe-gif/openwrt-redmi-ax3000
   CONFIG_FILE: "REDME_AX3000.config"
-  REPO_BRANCH: master
+  REPO_BRANCH: ipq50xx-mainline-kernel-5.15-openwrt-23.05
   SSH_ACTIONS: true
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
