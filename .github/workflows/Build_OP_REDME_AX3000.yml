@@ -5,9 +5,6 @@ on:
   repository_dispatch:
   workflow_dispatch:
   
-  watch:
-    types: [started]
-
 env:
   REPO_URL: https://github.com/hzyitc/openwrt-redmi-ax3000
   CONFIG_FILE: "REDME_AX3000.config"
@@ -92,10 +89,6 @@ jobs:
         rm openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
         cp patches/luci.c openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
 
-    - name: SSH connection to Actions
-      uses: P3TERX/debugger-action@master
-      if: env.SSH_ACTIONS == 'true'
-        
     - name: Download package
       id: package
       run: |
