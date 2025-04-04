@@ -85,6 +85,8 @@ jobs:
         chmod +x ./op-customize.sh && ./op-customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        rm openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
+        cp patches/luci.c openwrt/feeds/luci/libs/rpcd-mod-luci/src/luci.c
         cd openwrt && make defconfig
         
     - name: Download package
