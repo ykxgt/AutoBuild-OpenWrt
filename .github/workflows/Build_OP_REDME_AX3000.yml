@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   
 env:
-  REPO_URL:https://github.com/LeeHe-gif/openwrt-redmi-ax3000
+  REPO_URL: https://github.com/LeeHe-gif/openwrt-redmi-ax3000
   CONFIG_FILE: "REDME_AX3000.config"
   REPO_BRANCH: master
   SSH_ACTIONS: true
