@@ -6,7 +6,7 @@ on:
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'qca988x.config'  
+  CONFIG_FILE: 'co-x86.config'  
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -61,10 +61,9 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        # echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
-        # echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
-        # echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
-        # echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+        git clone https://github.com/liudf0716/luci-app-apfree-wifidog.git package/luci-app-apfree-wifidog
+        git clone https://github.com/sirpdboy/luci-app-partexp.git package/luci-app-partexp
 
     - name: Free up disk space
       env:
@@ -80,14 +79,12 @@ jobs:
       run: |
         ./scripts/feeds update -a
         ./scripts/feeds install -a
-        # ./scripts/feeds install -a -f -p modem
-        # ./scripts/feeds install -d y -p istore luci-app-store
-        # ./scripts/feeds install -a -p nas
-        # ./scripts/feeds install -a -p nas_luci
 
     - name: Configuration Customization - Build_COX86
       run: |
-        chmod +x ./customize.sh && ./customize.sh
+        sed -i 's/$1$kJ8jReer$CtNd2NDN0F38R6U8J8TUr1.//g' openwrt/package/lean/default-settings/files/zzz-default-settings
+        cp /patches/mac80211.sh openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
+        sed -i 's/192.168.1.1/192.168.9.1/g' openwrt/package/base-files/files/bin/config_generate
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
         cd openwrt && make defconfig
