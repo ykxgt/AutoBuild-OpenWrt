@@ -69,6 +69,7 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
+        git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
         echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
 
     - name: Free up disk space
@@ -91,7 +92,7 @@ jobs:
       run: |
         if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
             CONFIG_FILE="mangopi_m28c.config"
-        elif [[ "${{ inputs.device_config }}" == *"6.12.20"* ]]; then
+        elif [[ "${{ inputs.device_config }}" == *"6.12.x"* ]]; then
             CONFIG_FILE="MangoPi_M28C-6.12.x.config"
         else
             echo "worng kernel!"
@@ -148,7 +149,7 @@ jobs:
           echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
           touch release.txt
           if [[ "${{ inputs.device_config }}" == *"latest"* ]]; then
-             echo -e "使用lede源码编译最新内核MangoPi_M28C的固件" >> release.txt
+             echo -e "使用lede源码编译MangoPi_M28C的固件" >> release.txt
           elif [[ "${{ inputs.device_config }}" == *"6.12.x"* ]]; then
              echo -e "使用lede源码编译6.12.x内核MangoPi_M28C的固件" >> release.txt
           else
