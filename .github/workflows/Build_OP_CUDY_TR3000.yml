@@ -21,6 +21,15 @@ on:
           - U-Boot
           - V1
 
+      log_switch:
+        description: "Compile log switch"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - yes
+          - no
+
 env:
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
@@ -80,7 +89,6 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
-          config/
         key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
@@ -134,7 +142,6 @@ jobs:
         cd openwrt && make defconfig
         
     - name: Download package
-      id: package
       run: |
         cd openwrt/
         make download -j$(nproc) || { echo "❌ 下载失败"; exit 1; }
@@ -144,12 +151,15 @@ jobs:
       id: compile
       run: |
         cd openwrt/
-        echo "ℹ️ 使用 $(nproc) 线程编译"
-        make -j$(nproc) || { echo "❌ 编译失败"; exit 1; }
-        
+        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+            make -j1 V=s
+        else
+            make -j$(nproc)
+        fi
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Organize files
       id: organize
@@ -158,6 +168,7 @@ jobs:
         cd openwrt/bin/targets/*/* || { echo "❌ 固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        steps.compile.outputs.status == 'success'
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
@@ -167,8 +178,7 @@ jobs:
         path: ${{ env.FIRMWARE }}/*
 
     - name: Generate release info
-      id: release
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success' 
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
@@ -179,11 +189,10 @@ jobs:
         分支: $REPO_BRANCH
         时间: $(date +"%Y-%m-%d %H:%M")
         EOF
-        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
-      if: steps.release.outputs.status == 'success' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
