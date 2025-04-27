@@ -99,7 +99,6 @@ jobs:
       id: compile
       working-directory: ./openwrt
       run: |
-        cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
             make -j1 V=s
         else
