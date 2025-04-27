@@ -6,7 +6,7 @@ on:
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  # 已在env中定义
+  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config' 
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3  # 更新到最新版
+      uses: actions/checkout@v3  
 
     - name: Free disk space
       uses: jlumbroso/free-disk-space@main
@@ -52,7 +52,6 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
-          config/  # 新增配置缓存
         key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
@@ -90,7 +89,7 @@ jobs:
       run: |
         cd openwrt/
         make download -j$(nproc) || { echo "❌ 下载失败"; exit 1; }
-        find dl -size -1024c -delete  # 更简洁的删除方式
+        find dl -size -1024c -delete 
 
     - name: Compile the OpenWrt
       id: compile
@@ -98,8 +97,6 @@ jobs:
         cd openwrt/
         echo "ℹ️ 使用 $(nproc) 线程编译"
         make -j$(nproc) || { echo "❌ 编译失败"; exit 1; }
-        
-        # 提取设备信息
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
