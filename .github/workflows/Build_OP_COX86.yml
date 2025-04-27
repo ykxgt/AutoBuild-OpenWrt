@@ -88,13 +88,12 @@ jobs:
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
 
-    - name: 上传固件产物
-      uses: actions/upload-artifact@v3
-      if: !cancelled()
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}/*
-        retention-days: 3
 
     - name: 准备发布信息
       if: env.UPLOAD_RELEASE == 'true'
@@ -110,7 +109,7 @@ jobs:
 
     - name: 创建发布版本
       uses: softprops/action-gh-release@v1
-      if: !cancelled()
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
