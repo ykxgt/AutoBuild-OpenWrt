@@ -52,7 +52,6 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
-          config/  # 新增配置缓存
         key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
