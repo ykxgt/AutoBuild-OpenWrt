@@ -89,14 +89,17 @@ jobs:
         make defconfig
         
     - name: 下载软件包
+      id : download    
       run: |
         cd openwrt/
         make download -j$(nproc) || { echo "::error::下载失败"; exit 1; }
         find dl -size -1024c -delete
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 编译固件
+      id: compile
+      if: steps.download.outputs.status == 'success'
       run: |
-        cd openwrt/
         cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
             make -j1 V=s
@@ -106,6 +109,7 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 整理固件文件
       id: organize
@@ -123,7 +127,8 @@ jobs:
         path: ${{ env.FIRMWARE }}/*
 
     - name: 准备发布信息
-      if: env.UPLOAD_RELEASE == 'true'
+      id : tag
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
@@ -134,6 +139,7 @@ jobs:
         时间: $(date +"%Y-%m-%d %H:%M")
         注意: 基于OpenWrt 19.07版本
         EOF
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 创建发布版本
       uses: softprops/action-gh-release@v1
