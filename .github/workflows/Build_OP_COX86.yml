@@ -118,6 +118,7 @@ jobs:
         path: ${{ env.FIRMWARE }}/*
 
     - name: 准备发布信息
+      id : release
       if: steps.organize.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true'
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
