@@ -80,7 +80,7 @@ jobs:
       run: |
         if [[ "${{ inputs.REPO_URL }}" == *"lede"* ]]; then
             git clone --depth 1 https://github.com/coolsnowwolf/lede -b $REPO_BRANCH openwrt
-            echo 'src-git modem https://github.com/FUjr/modem_feeds.git;main' >> feeds.conf.default
+            echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
         elif [[ "${{ inputs.REPO_URL }}" == *"imm"* ]]; then
               git clone --depth 1 https://github.com/immortalwrt/immortalwrt -b $REPO_BRANCH openwrt
               git clone https://github.com/xiaorouji/openwrt-passwall2 openwrt/package/feeds/openwrt-passwall2
