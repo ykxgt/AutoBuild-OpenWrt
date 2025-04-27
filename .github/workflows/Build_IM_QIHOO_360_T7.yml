@@ -98,7 +98,7 @@ jobs:
         cd openwrt/
         make download -j$(nproc) || { echo "❌ 下载失败"; exit 1; }
         find dl -size -1024c -delete
-	echo "status=success" >> ${GITHUB_OUTPUT}
+        echo "status=success" >> ${GITHUB_OUTPUT}
  
     - name: Compile the OpenWrt
       id : compile
@@ -113,8 +113,8 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-	echo "status=success" >> ${GITHUB_OUTPUT}
-
+        echo "status=success" >> ${GITHUB_OUTPUT}
+	
     - name: Organize files
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
@@ -122,7 +122,7 @@ jobs:
         cd openwrt/bin/targets/*/* || { echo "❌ 固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-	echo "status=success" >> ${GITHUB_OUTPUT}
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
