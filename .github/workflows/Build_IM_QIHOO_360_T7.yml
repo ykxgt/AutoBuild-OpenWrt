@@ -1,13 +1,12 @@
 name: Build_imm-QIHOO_360_T7
 
-# Add a button to trigger the workflow
 on: 
   repository_dispatch:
   workflow_dispatch:
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  CONFIG_FILE: 'IM-QIHOO_360_T7.config'
+  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  # 已在env中定义
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -20,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@master
+      uses: actions/checkout@v3  # 更新到最新版
 
     - name: Free disk space
       uses: jlumbroso/free-disk-space@main
@@ -28,31 +27,14 @@ jobs:
         tool-cache: false
         android: true
         dotnet: true
-        haskell: true
-        large-packages: true
-        docker-images: false
-        swap-storage: true
 
     - name: Initialization environment
       id: init
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        set +e
-        docker rmi `docker images -q`
-        echo "Deleting files, please wait ..."
-        sudo rm -rf \
-          /usr/share/dotnet \
-          /etc/mysql \
-          /etc/php
         sudo -E apt-get -y update
-        sudo -E apt-get -y purge azure-cli  ghc* zulu* hhvm llvm* firefox google* dotnet* powershell openjdk* mysql* php*
-        sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/LeeHe-gif/depend_ubuntu2204_openwrt/refs/heads/main/depend_ubuntu2204_openwrt)
-        sudo -E systemctl daemon-reload
-        sudo -E apt-get -y autoremove --purge
-        sudo -E apt-get clean
-        sudo mkdir -p /workdir
-        sudo chown ${USER}:${GROUPS} /workdir
+        sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/LeeHe-gif/depend_ubuntu2204_openwrt/main/depend_ubuntu2204_openwrt)
         sudo timedatectl set-timezone "${TZ}"
         echo "status=success" >> ${GITHUB_OUTPUT}
         
@@ -64,14 +46,22 @@ jobs:
         cd openwrt
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
 
+    - name: Cache OpenWrt downloads
+      uses: actions/cache@v3
+      with:
+        path: |
+          openwrt/dl
+          openwrt/build_dir
+          config/  # 新增配置缓存
+        key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
+
     - name: Free up disk space
-      env:
-        DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo mkdir -p -m 777 /mnt/openwrt/dl /mnt/openwrt/staging_dir /mnt/openwrt/build_dir
-        ln -sf /mnt/openwrt/dl openwrt/dl
-        ln -sf /mnt/openwrt/staging_dir openwrt/staging_dir
-        ln -sf /mnt/openwrt/build_dir openwrt/build_dir     
+        sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
+        sudo chown -R $USER:$GROUPS /mnt/openwrt
+        ln -sfn /mnt/openwrt/dl openwrt/dl
+        ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
+        ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
         
     - name: Update & Install feeds
       working-directory: ./openwrt
@@ -82,72 +72,72 @@ jobs:
 
     - name: Configuration Customization - Build_QIHOO_360_T7
       run: |
+        # 验证配置文件存在
+        if [[ ! -f "${CONFIG_FILE}" ]]; then
+          echo "❌ 错误：配置文件 ${CONFIG_FILE} 不存在！"
+          echo "当前目录结构："
+          ls -R
+          exit 1
+        fi
+        
         chmod +x ./imm-customize.sh && ./imm-customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
-        [[ -e "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        cp -fv "${CONFIG_FILE}" openwrt/.config
         cd openwrt && make defconfig
         
     - name: Download package
       id: package
       run: |
         cd openwrt/
-        make download -j$(nproc)
-        find dl -size -1024c -exec ls -l {} \;
-        find dl -size -1024c -exec rm -f {} \;
+        make download -j$(nproc) || { echo "❌ 下载失败"; exit 1; }
+        find dl -size -1024c -delete  # 更简洁的删除方式
 
     - name: Compile the OpenWrt
       id: compile
       run: |
         cd openwrt/
-        echo -e "$(nproc) thread compile"
-        make -j$(nproc)
-        echo "status=success" >> ${GITHUB_OUTPUT}
+        echo "ℹ️ 使用 $(nproc) 线程编译"
+        make -j$(nproc) || { echo "❌ 编译失败"; exit 1; }
+        
+        # 提取设备信息
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-
-    - name: Check space usage
-      if: (!cancelled())
-      run: df -hT
 
     - name: Organize files
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/targets/*/*
+        cd openwrt/bin/targets/*/* || { echo "❌ 固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@v3
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
+        path: ${{ env.FIRMWARE }}/*
 
-    - name: Generate release tag
-      id: tag
+    - name: Generate release info
+      id: release
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
-          echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-          touch release.txt
-          echo -e "使用immortalwrt源码编译QIHOO_360_T7的固件" >> release.txt
-          echo "status=success" >> $GITHUB_OUTPUT
+        echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
+        cat <<EOF > release.txt
+        🚀 ImmortalWrt 固件编译结果
+        --------------------------
+        设备: QIHOO_360_T7
+        时间: $(date +"%Y-%m-%d %H:%M")
+        内核: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
+        EOF
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      if: steps.release.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.tag.outputs.release_tag }}
+        tag_name: ${{ steps.release.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
-
-    - name: Delete workflow runs
-      uses: LeeHe-gif/delete-workflow-runs@main
-      with:
-        retain_days: 1
-        keep_minimum_runs: 3
-        token: ${{ secrets.GITHUB_TOKEN }}
