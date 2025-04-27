@@ -3,7 +3,15 @@ name: Build_JDC_AX1800PRO
 on: 
   repository_dispatch:
   workflow_dispatch:
-  
+    inputs:
+      log_switch:
+        description: "Compile log switch"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - yes
+          - no
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   CONFIG_FILE: 'config/JDC_AX1800PRO.config'
