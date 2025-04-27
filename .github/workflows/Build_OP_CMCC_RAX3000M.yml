@@ -150,6 +150,7 @@ jobs:
         path: ${{ env.FIRMWARE }}/*
 
     - name: Generate release info
+      id : release
       if: steps.organize.outputs.status == 'success' 
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
