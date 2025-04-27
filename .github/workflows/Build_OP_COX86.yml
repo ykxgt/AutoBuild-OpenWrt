@@ -48,7 +48,6 @@ jobs:
         echo "status=success" >> ${GITHUB_OUTPUT}
         
     - name: 克隆源码
-      id: codes
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
@@ -141,7 +140,6 @@ jobs:
         files: ${{ env.FIRMWARE }}/*
 
     - name: 清理旧工作流
-      if: always()
       uses: LeeHe-gif/delete-workflow-runs@main
       with:
         retain_days: 1
