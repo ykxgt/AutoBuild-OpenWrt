@@ -61,6 +61,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Cache OpenWrt downloads
       uses: actions/cache@v3
@@ -68,7 +69,6 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
-          config/
         key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
@@ -112,14 +112,16 @@ jobs:
         cd openwrt && make defconfig
         
     - name: Download package
-      id: package
+      id : package
       run: |
         cd openwrt/
         make download -j$(nproc) || { echo "❌ 下载失败"; exit 1; }
         find dl -size -1024c -delete
-
+        echo "status=success" >> ${GITHUB_OUTPUT}
+        
     - name: Compile the OpenWrt
       id: compile
+      if: steps.package.outputs.status == 'success'
       run: |
         cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
@@ -130,6 +132,7 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Organize files
       id: organize
@@ -147,8 +150,7 @@ jobs:
         path: ${{ env.FIRMWARE }}/*
 
     - name: Generate release info
-      id: release
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.organize.outputs.status == 'success' 
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
@@ -162,7 +164,7 @@ jobs:
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
-      if: steps.release.outputs.status == 'success' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
