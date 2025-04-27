@@ -2,7 +2,7 @@ name: Build_HILINK_H29K
 
 on: 
   repository_dispatch:
-    workflow_dispatch:
+  workflow_dispatch:
     inputs:
       log_switch:
         description: "Compile log switch"
