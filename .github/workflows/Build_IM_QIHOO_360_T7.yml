@@ -6,7 +6,7 @@ on:
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  # 已在env中定义
+  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3  # 更新到最新版
+      uses: actions/checkout@v3  
 
     - name: Free disk space
       uses: jlumbroso/free-disk-space@main
