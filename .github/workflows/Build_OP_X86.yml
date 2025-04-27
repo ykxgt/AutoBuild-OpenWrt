@@ -108,7 +108,7 @@ jobs:
 
     - name: 创建发布版本
       uses: softprops/action-gh-release@v1
-      if: !cancelled()
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
