@@ -6,7 +6,7 @@ on:
   
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt.git
-  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  
+  CONFIG_FILE: 'config/IM-QIHOO_360_T7.config'  # 已在env中定义
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3  
+      uses: actions/checkout@v3  # 更新到最新版
 
     - name: Free disk space
       uses: jlumbroso/free-disk-space@main
@@ -52,6 +52,7 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
+          config/  # 新增配置缓存
         key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
