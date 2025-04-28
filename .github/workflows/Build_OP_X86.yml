@@ -95,11 +95,13 @@ jobs:
         echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: 整理固件文件
+      id: organize
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true'
       run: |
         cd openwrt/bin/targets/*/* || { echo "::error::固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
