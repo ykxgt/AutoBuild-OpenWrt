@@ -168,7 +168,7 @@ jobs:
         cd openwrt/bin/targets/*/* || { echo "❌ 固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        steps.compile.outputs.status == 'success'
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
