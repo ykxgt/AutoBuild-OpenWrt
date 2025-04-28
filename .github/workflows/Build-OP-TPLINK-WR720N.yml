@@ -1,4 +1,4 @@
-name: Build_TL_WR720N
+name: Build_TPLINK_WR720N
 
 on: 
   repository_dispatch:
@@ -25,7 +25,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
 
     steps:
     - name: 检出代码
@@ -38,6 +37,7 @@ jobs:
       with:
         tool-cache: false
         android: true
+        dotnet: true
 
     - name: 安装Python 2.7
       run: |
