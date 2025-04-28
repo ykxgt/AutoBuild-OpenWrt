@@ -89,10 +89,10 @@ jobs:
       run: |
         if [[ "${{ inputs.source_branch }}" == *"lede"* ]]; then
           chmod +x ./customize.sh && ./customize.sh
-          CONFIG_FILE="lede-phicomm-k2g.config"
+          CONFIG_FILE="config/lede-phicomm-k2g.config"
         else
           chmod +x ./imm-customize.sh && ./imm-customize.sh   
-          CONFIG_FILE="imm_phicomm_k2g.config"
+          CONFIG_FILE="config/imm_phicomm_k2g.config"
         fi
         [[ -d "files" ]] && cp -r files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
