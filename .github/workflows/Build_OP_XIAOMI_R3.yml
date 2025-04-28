@@ -3,10 +3,19 @@ name: Build_XIAOMI_R3
 on: 
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      log_switch:
+        description: "Compile log switch"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - yes
+          - no
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'XIAOMI_R3.config'
+  CONFIG_FILE: 'config/XIAOMI_R3.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -16,7 +25,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
 
     steps:
     - name: 检出代码
@@ -29,13 +37,15 @@ jobs:
       with:
         tool-cache: false
         android: true
+        dotnet: true
 
     - name: 初始化环境
       run: |
-        sudo apt-get update -qq
-        sudo apt-get install -y --no-install-recommends $(curl -fsSL https://raw.githubusercontent.com/LeeHe-gif/depend_ubuntu2204_openwrt/main/depend_ubuntu2204_openwrt)
+        sudo -E apt-get -y update
+        sudo -E apt-get -y install $(curl -fsSL https://raw.githubusercontent.com/LeeHe-gif/depend_ubuntu2204_openwrt/main/depend_ubuntu2204_openwrt)
         sudo timedatectl set-timezone "${TZ}"
-
+        echo "status=success" >> ${GITHUB_OUTPUT}
+        
     - name: 克隆源码
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
@@ -53,6 +63,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
+        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
         ./scripts/feeds install -a
 
     - name: 自定义配置
@@ -69,20 +80,27 @@ jobs:
         find dl -size -1024c -delete
 
     - name: 编译固件
+      id : compile
       run: |
         cd openwrt/
-        echo "::notice::开始编译 (多线程)"
-        make -j$(nproc) || { echo "::error::编译失败"; exit 1; }
+        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+            make -j1 V=s
+        else
+            make -j$(nproc)
+        fi
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 整理固件文件
-      if: env.UPLOAD_FIRMWARE == 'true'
+      id: organize
+      if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/* || { echo "::error::固件目录不存在"; exit 1; }
         rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件产物
       uses: actions/upload-artifact@main
@@ -93,6 +111,7 @@ jobs:
         retention-days: 3
 
     - name: 准备发布信息
+      id: release
       if: env.UPLOAD_RELEASE == 'true'
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
