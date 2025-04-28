@@ -52,7 +52,6 @@ jobs:
         path: |
           openwrt/dl
           openwrt/build_dir
-          config/
         key: ${{ runner.os }}-${{ env.REPO_URL }}-${{ hashFiles('config/*.config') }}
 
     - name: Setup disk space
@@ -130,6 +129,7 @@ jobs:
         Branch: $REPO_BRANCH
         Kernel: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
         EOF
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
