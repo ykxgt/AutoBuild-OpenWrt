@@ -1,14 +1,10 @@
 name: Auto-Clean
 
 on:
-  # Automatic cleaning: Every three days at 6 AM
-  schedule:
-    - cron: 0 6 */3 * *
-  # Manual cleaning
   workflow_dispatch:
     inputs:
       NUMBER:
-        default: '0'
+        default: '20'
         required: false
         type: string
 
