@@ -15,7 +15,7 @@ on:
       log_switch:
         description: "Compile log switch"
         required: false
-        default: "false"
+        default: "no"
         type: choice
         options:
           - yes
