@@ -3,6 +3,7 @@
 ![GitHub Stars](https://img.shields.io/github/stars/LeeHe-gif/AutoBuild-OpenWrt.svg?style=flat&logo=appveyor&label=Stars&logo=github)
 ![GitHub Forks](https://img.shields.io/github/forks/LeeHe-gif/AutoBuild-OpenWrt.svg?style=flat&logo=appveyor&label=Forks&logo=github)
 ![GitHub last commit](https://img.shields.io/github/last-commit/LeeHe-gif/AutoBuild-OpenWrt?label=Latest%20Commit&logo=github)
+[![Build OpenWrt](https://github.com/mgz0227/OpenWrt_x86/actions/workflows/Openwrt-AutoBuild.yml/badge.svg)](https://github.com/mgz0227/OpenWrt_x86/actions/workflows/Openwrt-AutoBuild.yml)
 
 I18N: [English](README_EN.md) | [简体中文](README.md)
 
