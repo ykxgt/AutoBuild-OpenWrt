@@ -10,8 +10,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
           
 env:
   REPO_URL: https://github.com/openwrt/openwrt
@@ -101,7 +101,7 @@ jobs:
       if: steps.download.outputs.status == 'success'
       run: |
         cd openwrt/
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
