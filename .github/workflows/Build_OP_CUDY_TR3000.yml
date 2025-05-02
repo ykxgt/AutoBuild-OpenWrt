@@ -20,15 +20,14 @@ on:
         options:
           - U-Boot
           - V1
-
       log_switch:
         description: "Compile log switch"
         required: false
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
 
 env:
   REPO_BRANCH: master
@@ -82,14 +81,6 @@ jobs:
                 exit 1
                 ;;
         esac
-
-    - name: Cache OpenWrt downloads
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
       run: |
@@ -151,7 +142,7 @@ jobs:
       id: compile
       run: |
         cd openwrt/
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
