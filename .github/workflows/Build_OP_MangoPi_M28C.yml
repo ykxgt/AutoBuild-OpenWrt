@@ -50,6 +50,10 @@ jobs:
         android: true
         dotnet: true
 
+    - name: space usage check  
+      run: |
+        df -H
+
     - name: Initialization environment
       id: init
       env:
@@ -76,6 +80,7 @@ jobs:
         ln -sfn /mnt/openwrt/dl openwrt/dl
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
+        df -H
         
     - name: Update & Install feeds
       working-directory: ./openwrt
@@ -86,20 +91,16 @@ jobs:
 
     - name: Configuration Customization
       run: |
-        if [[ "${{ inputs.wifi }}" == "true" ]]; then
-            sed -i 's/# CONFIG_PACKAGE_kmod-mmc is not set/CONFIG_PACKAGE_kmod-mmc=y/' ${CONFIG_FILE}
-            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' ${CONFIG_FILE}
-        fi
-        
         if [[ "${{ inputs.device_config }}" == "latest" ]]; then
             CONFIG_FILE="config/MangoPi_M28C.config"
         else
             CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"
         fi
-        chmod +x ./customize.sh && ./customize.sh
+        if [[ "${{ inputs.wifi }}" == "true" ]]; then
+            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' ${CONFIG_FILE}
+        fi
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -f "" ]] && cp -f ${CONFIG_FILE} openwrt/.config
-        cd openwrt && make defconfig
         
     - name: Download package
       run: |
