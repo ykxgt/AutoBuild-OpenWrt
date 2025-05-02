@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       device_config:
-        description: "Select kernel"
+        description: "选择内核"
         required: false
         default: "6.12.x"
         type: choice
@@ -13,14 +13,21 @@ on:
           - latest
           - 6.12.x
       log_switch:
-        description: "Compile log switch"
+        description: "编译日志开关"
         required: false
         default: "false"
         type: choice
         options:
           - true
           - false
-
+      wifi:
+        description: "是否加自带wifi网卡驱动"
+        required: false
+        default: "true"
+        type: choice
+        options:
+          - true
+          - false
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
@@ -96,6 +103,10 @@ jobs:
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -f "${CONFIG_FILE}" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        if [[ "${{ inputs.wifi }}" == "true" ]]; then
+            sed -i 's/# CONFIG_PACKAGE_kmod-mmc is not set/CONFIG_PACKAGE_kmod-mmc=y/' .config
+            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' .config
+        fi
         cd openwrt && make defconfig
         
     - name: Download package
