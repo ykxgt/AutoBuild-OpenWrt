@@ -68,15 +68,6 @@ jobs:
         cd openwrt
         git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        
-    - name: Cache OpenWrt downloads
-      uses: actions/cache@v3
-      if: ${{ steps.codes.outputs.status }} == 'success' && !cancelled()
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('openwrt/.config') }}
 
     - name: Free up disk space
       run: |
@@ -95,14 +86,15 @@ jobs:
 
     - name: Configuration Customization
       run: |
+        if [[ "${{ inputs.wifi }}" == "true" ]]; then
+            sed -i 's/# CONFIG_PACKAGE_kmod-mmc is not set/CONFIG_PACKAGE_kmod-mmc=y/' ${CONFIG_FILE}
+            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' ${CONFIG_FILE}
+        fi
+        
         if [[ "${{ inputs.device_config }}" == "latest" ]]; then
             CONFIG_FILE="config/MangoPi_M28C.config"
         else
             CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"
-        fi
-        if [[ "${{ inputs.wifi }}" == "true" ]]; then
-            sed -i 's/# CONFIG_PACKAGE_kmod-mmc is not set/CONFIG_PACKAGE_kmod-mmc=y/' ${CONFIG_FILE}
-            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' ${CONFIG_FILE}
         fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
