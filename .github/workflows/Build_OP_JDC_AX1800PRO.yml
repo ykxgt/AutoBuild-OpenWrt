@@ -10,8 +10,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   CONFIG_FILE: 'config/JDC_AX1800PRO.config'
@@ -54,14 +54,6 @@ jobs:
         EOF
         git clone https://github.com/sirpdboy/luci-app-poweroffdevice package/luci-app-poweroffdevice
 
-    - name: Cache dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-${{ env.REPO_URL }}-${{ hashFiles('config/*.config') }}
-
     - name: Setup disk space
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
@@ -99,7 +91,7 @@ jobs:
       id: compile
       working-directory: ./openwrt
       run: |
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
