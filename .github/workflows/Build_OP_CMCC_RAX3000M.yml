@@ -18,8 +18,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -62,14 +62,6 @@ jobs:
         cd openwrt
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
         echo "status=success" >> ${GITHUB_OUTPUT}
-
-    - name: Cache OpenWrt downloads
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
       run: |
@@ -124,7 +116,7 @@ jobs:
       if: steps.package.outputs.status == 'success'
       run: |
         cd openwrt/
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
