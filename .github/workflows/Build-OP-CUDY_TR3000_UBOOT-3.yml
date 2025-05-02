@@ -3,6 +3,7 @@ name: Build_CU-CUDY_TR3000_UBOOT
 on: 
   repository_dispatch:
   workflow_dispatch:
+  
     inputs:
       log_switch:
         description: "Compile log switch"
@@ -10,8 +11,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
     
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -59,15 +60,6 @@ jobs:
         echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
 
-    - name: Cache OpenWrt downloads
-      uses: actions/cache@v3
-      if: ${{ steps.codes.outputs.status }} == 'success' && !cancelled()
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('openwrt/.config') }}
-
     - name: Free up disk space
       run: |
         sudo mkdir -p /mnt/openwrt/{dl,staging_dir,build_dir}
@@ -106,7 +98,7 @@ jobs:
       if: steps.download.outputs.status == 'success'
       run: |
         cd openwrt/
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
