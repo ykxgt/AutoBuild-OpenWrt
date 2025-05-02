@@ -10,8 +10,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -59,14 +59,6 @@ jobs:
         src-git nas https://github.com/linkease/nas-packages.git;master
         src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
         EOF
-
-    - name: Cache OpenWrt downloads  
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
 
     - name: Free up disk space
       run: |
