@@ -96,11 +96,11 @@ jobs:
         else
             CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"
         fi
-        if [[ "${{ inputs.wifi }}" == "true" ]]; then
-            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' ${CONFIG_FILE}
-        fi
         [[ -d "files" ]] && mv -f files openwrt/files
         [[ -f "" ]] && cp -f ${CONFIG_FILE} openwrt/.config
+        if [[ "${{ inputs.wifi }}" == "true" ]]; then
+            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' openwrt/.config
+        fi
         
     - name: Download package
       run: |
