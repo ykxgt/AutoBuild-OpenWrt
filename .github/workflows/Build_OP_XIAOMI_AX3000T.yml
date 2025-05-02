@@ -10,8 +10,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
   
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -47,14 +47,6 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-
-    - name: Cache dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-        key: ${{ runner.os }}-${{ env.REPO_URL }}-${{ hashFiles('config/*.config') }}
 
     - name: Setup disk space
       run: |
@@ -93,7 +85,7 @@ jobs:
       id: compile
       working-directory: ./openwrt
       run: |
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
