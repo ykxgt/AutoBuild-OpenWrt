@@ -10,8 +10,8 @@ on:
         default: "false"
         type: choice
         options:
-          - yes
-          - no
+          - true
+          - false
           
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -56,15 +56,6 @@ jobs:
         git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
         echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
 
-    - name: Cache OpenWrt downloads  # 新增缓存步骤
-      uses: actions/cache@v3
-      with:
-        path: |
-          openwrt/dl
-          openwrt/build_dir
-          config/
-        key: ${{ runner.os }}-openwrt-${{ hashFiles('config/*.config') }}
-
     - name: Free up disk space
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
@@ -104,7 +95,7 @@ jobs:
       id: compile
       run: |
         cd openwrt/
-        if [[ "${{ inputs.log_switch }}" == "yes" ]]; then
+        if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
             make -j$(nproc)
