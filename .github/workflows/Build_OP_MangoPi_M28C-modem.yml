@@ -1,4 +1,4 @@
-name: Build_OP_MangoPi_M28C_modem
+name: Build_MangoPi_M28C_modem
 
 on: 
   repository_dispatch:
