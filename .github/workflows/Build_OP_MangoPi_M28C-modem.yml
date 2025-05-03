@@ -71,7 +71,7 @@ jobs:
         ./scripts/feeds install -a
         ./scripts/feeds install -a -f -p modem
 
-    - name: Configuration Customization - Build_QIHOO_360_T7
+    - name: Configuration Customization
       run: |
         # 验证配置文件存在
         if [[ ! -f "${CONFIG_FILE}" ]]; then
