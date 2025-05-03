@@ -52,10 +52,7 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
-        git clone https://github.com/liudf0716/luci-app-apfree-wifidog.git package/luci-app-apfree-wifidog
-        git clone https://github.com/sirpdboy/luci-app-partexp.git package/luci-app-partexp
+        echo 'src-git 5GModemSupport https://github.com/Siriling/5G-Modem-Support.git' >> feeds.conf.default
 
     - name: 配置缓存目录
       run: |
@@ -71,13 +68,9 @@ jobs:
         ./scripts/feeds update -a
         sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
         ./scripts/feeds install -a
-        ./scripts/feeds install -a -f -p modem
 
     - name: 自定义配置
       run: |
-        sed -i 's/$1$kJ8jReer$CtNd2NDN0F38R6U8J8TUr1.//g' openwrt/package/lean/default-settings/files/zzz-default-settings
-        cp patches/mac80211.sh openwrt/package/kernel/mac80211/files/lib/wifi/mac80211.sh
-        sed -i 's/192.168.1.1/192.168.9.1/g' openwrt/package/base-files/files/bin/config_generate
         [[ -d "files" ]] && cp -r files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
         cd openwrt && make defconfig
@@ -129,6 +122,7 @@ jobs:
         源码: $REPO_URL
         分支: $REPO_BRANCH
         时间: $(date +"%Y-%m-%d %H:%M")
+        插件：modem，docker，openclash等
         EOF
 
     - name: 创建发布版本
