@@ -132,7 +132,7 @@ jobs:
         cat <<EOF > release.txt
         🚀 Lede 固件编译结果
         --------------------------
-        设备: QIHOO_360_T7
+        设备: MangoPi M28C
         时间: $(date +"%Y-%m-%d %H:%M")
         内核: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
         插件：modem，openclash，passwall等等
