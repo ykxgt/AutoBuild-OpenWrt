@@ -1,4 +1,4 @@
-name: Build_COX86
+name: Build_CU-X86
 
 on:
   repository_dispatch:
@@ -13,9 +13,17 @@ on:
           - true
           - false
           
+      device_config:
+        description: "Select your device"
+        required: false
+        default: "normal"
+        type: choice
+        options:
+          - normal
+          - nst
+          
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'config/cu-x86-nst.config'  
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -63,7 +71,7 @@ jobs:
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
         
-    - name: 更新安装 feeds
+    - name: 更新/安装 feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
@@ -72,6 +80,11 @@ jobs:
 
     - name: 自定义配置
       run: |
+        if [[ "${{ inputs.device_config }}" == "normal" ]]; then
+            CONFIG_FILE="config/co-x86.config"
+        else
+            CONFIG_FILE="config/cu-x86-nst.config"
+        fi
         [[ -d "files" ]] && cp -r files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
         cd openwrt && make defconfig
