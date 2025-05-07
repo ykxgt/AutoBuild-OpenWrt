@@ -15,7 +15,7 @@ on:
           
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'config/co-x86.config'  
+  CONFIG_FILE: 'config/cu-x86-nst.config'  
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
