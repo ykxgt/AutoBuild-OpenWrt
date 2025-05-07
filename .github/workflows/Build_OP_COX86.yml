@@ -53,7 +53,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
         git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
-        echo 'src-git 5GModemSupport https://github.com/Siriling/5G-Modem-Support.git' >> feeds.conf.default
+        echo 'src-git qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
 
     - name: 配置缓存目录
       run: |
