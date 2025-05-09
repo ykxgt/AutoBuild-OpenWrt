@@ -103,8 +103,8 @@ jobs:
         cd openwrt
         ls -a
         make defconfig
-        if [[ "${{ inputs.wifi }}" == "true" ]]; then
-            sed -i 's/# CONFIG_PACKAGE_kmod-aic8800s is not set/CONFIG_PACKAGE_kmod-aic8800s=y/' .config
+        if [[ "${{ inputs.wifi }}" == "false" ]]; then
+            sed -i 's/CONFIG_PACKAGE_kmod-aic8800s=y/# CONFIG_PACKAGE_kmod-aic8800s is not set/' .config
         fi
         
     - name: Download package
