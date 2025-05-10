@@ -53,6 +53,7 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
+        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
         echo 'src-git 5GModemSupport https://github.com/Siriling/5G-Modem-Support.git' >> feeds.conf.default
 
     - name: Free up disk space
@@ -135,7 +136,7 @@ jobs:
         设备: MangoPi M28C
         时间: $(date +"%Y-%m-%d %H:%M")
         内核: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
-        插件：modem，openclash，passwall等等
+        插件：qmodem，openclash，passwall等等
         EOF
 
     - name: Upload firmware to release
