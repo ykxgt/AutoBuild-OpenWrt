@@ -71,7 +71,8 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
         git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
-        echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+        echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
 
     - name: Free up disk space
       run: |
@@ -88,6 +89,7 @@ jobs:
         ./scripts/feeds update -a
         sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
         ./scripts/feeds install -a
+        ./scripts/feeds install -a -f -p modem
 
     - name: Configuration Customization
       run: |
