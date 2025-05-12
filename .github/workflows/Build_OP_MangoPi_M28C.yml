@@ -120,7 +120,7 @@ jobs:
       run: |
         cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "true" ]]; then
-            make -j$(nproc) V=s
+            make -j1 V=s
         else
             make -j$(nproc)
         fi
