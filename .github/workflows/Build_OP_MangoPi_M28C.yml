@@ -169,7 +169,7 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        files: ${{ env.FIRMWARE }}/*/*
 
     - name: Delete workflow runs
       uses: LeeHe-gif/delete-workflow-runs@main
