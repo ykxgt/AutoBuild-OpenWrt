@@ -12,6 +12,8 @@ on:
         options:
           - latest
           - 6.12.x
+          - test
+
       log_switch:
         description: "编译日志开关"
         required: false
@@ -20,6 +22,7 @@ on:
         options:
           - true
           - false
+
       wifi:
         description: "是否加自带wifi网卡驱动"
         required: false
@@ -28,6 +31,7 @@ on:
         options:
           - true
           - false
+
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
@@ -94,6 +98,7 @@ jobs:
       run: |
         if [[ "${{ inputs.device_config }}" == "latest" ]]; then
             CONFIG_FILE="config/MangoPi_M28C.config"
+        elif [[ "${{ inputs.device_config }}" == *"6.12.x"* ]]; then            CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"
         else
             CONFIG_FILE="config/test-m28c.config"
         fi
