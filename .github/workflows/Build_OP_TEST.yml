@@ -58,7 +58,11 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
+        if [[ "${{ inputs.device_config }}" == "m28c" ]]; then
+          git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+        fi
 
     - name: 配置缓存目录
       run: |
