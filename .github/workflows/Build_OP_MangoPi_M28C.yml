@@ -76,9 +76,7 @@ jobs:
         cd openwrt
         echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
         git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
-        if [[ "${{ inputs.device_config }}" == "test" ]]; then
-          git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
-        fi
+        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
 
     - name: Free up disk space
       run: |
