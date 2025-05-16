@@ -60,11 +60,13 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        echo 'src-git qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
-        git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
-
-
+        echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+        echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
+        echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        git clone https://github.com/lxiaya/openwrt-homeproxy package/homeproxy
+        git clone https://github.com/sirpdboy/luci-app-partexp.git package/luci-app-partexp
+        git clone https://github.com/Thaolga/openwrt-nekobox  package/openwrt-nekobox
+        
     - name: 配置缓存目录
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
