@@ -88,13 +88,13 @@ jobs:
       run: |
         case "${{ inputs.device_config }}" in
             "tr3000")
-                CONFIG_FILE="CUDY_TR3000-web.config"
+                CONFIG_FILE="config/CUDY_TR3000-web.config"
                 ;;
             "x86")
-                CONFIG_FILE="x86_web.config"
+                CONFIG_FILE="config/x86_web.config"
                 ;;
             "m28c")
-                CONFIG_FILE="MangoPi-6.12.x-test.config"
+                CONFIG_FILE="config/MangoPi-6.12.x-test.config"
                 ;;
             *)
                 echo "::error::不支持的设备配置"
