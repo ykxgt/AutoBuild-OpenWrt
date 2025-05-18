@@ -58,10 +58,15 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
-        echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
         if [[ "${{ inputs.device_config }}" == "m28c" ]]; then
-          git clone https://github.com/sirpdboy/netspeedtest.git package/netspeedtest
+            echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+            echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+            echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
+            echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+            git clone https://github.com/4IceG/luci-app-sms-tool.git package/luci-app-sms-tool
+            git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
+        else
+            echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
         fi
 
     - name: 配置缓存目录
@@ -89,7 +94,7 @@ jobs:
                 CONFIG_FILE="x86_web.config"
                 ;;
             "m28c")
-                CONFIG_FILE="MangoPi_M28C-6.12.20_web.config"
+                CONFIG_FILE="MangoPi-6.12.x-test.config"
                 ;;
             *)
                 echo "::error::不支持的设备配置"
