@@ -17,7 +17,7 @@ on:
         description: "Select your device"
         required: false
         default: "normal"
-        type: choice
+        type: boolean
         options:
           - normal
           - nst
