@@ -8,7 +8,7 @@ on:
         description: "Compile log switch"
         required: false
         default: "false"
-        type: choice
+        type: boolean
         options:
           - true
           - false
