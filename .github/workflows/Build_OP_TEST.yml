@@ -66,7 +66,7 @@ jobs:
             git clone https://github.com/4IceG/luci-app-sms-tool.git package/luci-app-sms-tool
             git clone https://github.com/sirpdboy/luci-app-eqosplus package/luci-app-eqosplus
         else
-            echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+            echo 'src-git modem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
         fi
 
     - name: 配置缓存目录
@@ -91,7 +91,7 @@ jobs:
                 CONFIG_FILE="config/CUDY_TR3000-web.config"
                 ;;
             "x86")
-                CONFIG_FILE="config/x86_web.config"
+                CONFIG_FILE="config/x86-test.config"
                 ;;
             "m28c")
                 CONFIG_FILE="config/test-m28c.config"
@@ -131,16 +131,15 @@ jobs:
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
       run: |
         cd openwrt/bin/targets/*/* || { echo "::error::固件目录不存在"; exit 1; }
-        rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: 上传固件产物
-      uses: actions/upload-artifact@main
+      uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}/*
+        path: openwrt/bin
         retention-days: 3
 
     - name: 准备发布信息
