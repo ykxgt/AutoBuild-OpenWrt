@@ -130,7 +130,7 @@ jobs:
         源码: $REPO_URL
         分支: $REPO_BRANCH
         时间: $(date +"%Y-%m-%d %H:%M")
-        特性: 包含iStore应用商店和NAS以及qmodem相关插件
+        特性: openclash以及qmodem相关插件
         EOF
 
     - name: Upload firmware to release
