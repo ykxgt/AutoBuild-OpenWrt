@@ -1,4 +1,4 @@
-name: Build_CU-CUDY_TR3000_V1
+name: Build_CUDY_TR3000_V1
 on: 
   repository_dispatch:
   workflow_dispatch:
