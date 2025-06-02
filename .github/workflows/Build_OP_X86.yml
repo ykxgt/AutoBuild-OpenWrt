@@ -47,6 +47,7 @@ jobs:
         echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: 克隆源码
+      id: clone
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cd openwrt
@@ -55,6 +56,8 @@ jobs:
         echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
         echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        echo "HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
+        echo "DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
 
     - name: 配置缓存目录
       run: |
@@ -62,7 +65,26 @@ jobs:
         ln -sfn /mnt/openwrt/dl openwrt/dl
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
-        
+
+    - name: 缓存工具链
+      uses: actions/cache@v3
+      id: toolchain-cache
+      with:
+        path: |
+          openwrt/staging_dir
+          openwrt/build_dir
+          openwrt/.ccache
+        key: ${{ runner.os }}-toolchain-${{ env.HASH }}-${{ env.DATE }}
+        restore-keys: |
+          ${{ runner.os }}-toolchain-${{ env.HASH }}-
+          ${{ runner.os }}-toolchain-
+
+    - name: 刷新缓存时间戳
+      if: steps.toolchain-cache.outputs.cache-hit == 'true'
+      run: |
+        find openwrt/staging_dir -type f -name ".stamp_*" -exec touch {} +
+        find openwrt/build_dir -type f -name ".stamp_*" -exec touch {} +
+
     - name: 更新安装 feeds
       working-directory: ./openwrt
       run: |
