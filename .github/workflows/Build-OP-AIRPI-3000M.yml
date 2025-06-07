@@ -13,9 +13,17 @@ on:
           - true
           - false
           
+      device_config:
+        description: "模块插件选择"
+        required: false
+        default: "modem"
+        type: choice
+        options:
+          - modem
+          - qmodem
+          
 env:
   REPO_URL : https://github.com/padavanonly/immortalwrt-mt798x-24.10
-  CONFIG_FILE: 'config/airpi.config' 
   REPO_BRANCH: 2410
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -56,6 +64,9 @@ jobs:
         echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
         echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
+            echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        fi
 
     - name: Free up disk space
       run: |
@@ -69,18 +80,15 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
-        ./scripts/feeds install -a
-        ./scripts/feeds install -a -f -p modem
+        # sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
+        ./scripts/feeds install -a -p
 
     - name: Configuration Customization
       run: |
-        # 验证配置文件存在
-        if [[ ! -f "${CONFIG_FILE}" ]]; then
-          echo "❌ 错误：配置文件 ${CONFIG_FILE} 不存在！"
-          echo "当前目录结构："
-          ls -R
-          exit 1
+        if [[ "${{ inputs.device_config }}" == "modem" ]]; then
+            CONFIG_FILE="config/airpi.config"
+        else
+            CONFIG_FILE="config/airpi-qmodem.config"
         fi
         chmod +x ./imm-customize.sh && ./imm-customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
@@ -134,10 +142,10 @@ jobs:
         cat <<EOF > release.txt
         🚀 immortalwrt 固件编译结果
         --------------------------
-        设备: MangoPi M28C
+        设备: AirPi 3000m/3000e
         时间: $(date +"%Y-%m-%d %H:%M")
         内核: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
-        插件：modem，openclash，等等
+        插件：openclash，pw等等
         EOF
 
     - name: Upload firmware to release
