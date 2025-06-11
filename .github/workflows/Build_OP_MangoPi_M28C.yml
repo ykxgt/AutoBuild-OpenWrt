@@ -88,25 +88,6 @@ jobs:
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
         df -H
-        
-    - name: 缓存工具链
-      uses: actions/cache@v3
-      id: toolchain-cache
-      with:
-        path: |
-          openwrt/staging_dir
-          openwrt/build_dir
-          openwrt/.ccache
-        key: ${{ runner.os }}-toolchain-${{ env.HASH }}-${{ env.DATE }}
-        restore-keys: |
-          ${{ runner.os }}-toolchain-${{ env.HASH }}-
-          ${{ runner.os }}-toolchain-
-
-    - name: 刷新缓存时间戳
-      if: steps.toolchain-cache.outputs.cache-hit == 'true'
-      run: |
-        find openwrt/staging_dir -type f -name ".stamp_*" -exec touch {} +
-        find openwrt/build_dir -type f -name ".stamp_*" -exec touch {} +
 
     - name: Update & Install feeds
       working-directory: ./openwrt
