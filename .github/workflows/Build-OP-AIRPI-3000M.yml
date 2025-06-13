@@ -1,4 +1,4 @@
-name: Build_AirPi_3000M
+name: Build_AirPi_EMMC_MANPER
 
 on: 
   repository_dispatch:
