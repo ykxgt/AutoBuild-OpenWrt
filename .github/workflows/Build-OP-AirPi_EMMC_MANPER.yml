@@ -60,9 +60,6 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        git clone https://github.com/NekokeCore/immortalwrt-mt798x-24.10.git tmp
-        rm -rf openwrt/package/mtk
-        cp -r tmp/package/mtk openwrt/package/mtk
         cd openwrt
         # echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
         # echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
