@@ -71,7 +71,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
+        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.086/' feeds/luci/applications/luci-app-openclash/Makefile
         ./scripts/feeds install -a
         
     - name: Configuration Customization
