@@ -1,4 +1,4 @@
-name: Build_NanoPi_R1P
+name: Build_OrangePi_R1_Plus
 
 on: 
   repository_dispatch:
@@ -15,7 +15,7 @@ on:
           
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'config/Nanopi_R1P.config'
+  CONFIG_FILE: 'config/Xunlong_OrangePi_R1_Plus.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -58,7 +58,7 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.079/' feeds/luci/applications/luci-app-openclash/Makefile
+        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.137/' feeds/luci/applications/luci-app-openclash/Makefile
         ./scripts/feeds install -a
 
     - name: Configuration Customization
@@ -114,7 +114,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
-        🚀 OpenWrt Firmware for NanoPi R1P
+        🚀 OpenWrt Firmware for Xunlong_OrangePi_R1_Plus
         --------------------------------
         Build Date: $(date +"%Y-%m-%d %H:%M")
         Source: $REPO_URL
