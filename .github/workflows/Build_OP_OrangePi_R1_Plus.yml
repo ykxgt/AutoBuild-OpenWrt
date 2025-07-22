@@ -45,6 +45,12 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
+        echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+        echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
+        echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Setup disk space
       run: |
@@ -53,9 +59,11 @@ jobs:
         ln -sfn /mnt/openwrt/dl openwrt/dl
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
+        df -h
         
     - name: Update feeds
-      working-directory: ./openwrt
+      working-directory: ./openwrt    
+      if: steps.clone.outputs.status == 'success'
       run: |
         ./scripts/feeds update -a
         sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.137/' feeds/luci/applications/luci-app-openclash/Makefile
