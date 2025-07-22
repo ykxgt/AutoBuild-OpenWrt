@@ -55,6 +55,7 @@ jobs:
         echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
         echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        git clone https://github.com/vernesong/OpenClash.git
         echo "HASH=$(git log -1 --pretty=format:'%h')" >> $GITHUB_ENV
         echo "DATE=$(date +"%Y%m%d")" >> $GITHUB_ENV
 
@@ -88,9 +89,9 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.133/' feeds/luci/applications/luci-app-openclash/Makefile
-        ./scripts/feeds install -a
-        ./scripts/feeds install -a -f -p modem
+        rm -rf feeds/luci/applications/luci-app-openclash
+        cp ../OpenClash/luci-app-openclash feeds/luci/applications/luci-app-openclash
+        ./scripts/feeds install -a -f
 
     - name: 自定义配置
       run: |
@@ -128,7 +129,7 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> ${GITHUB_OUTPUT}
 
-    - name: Upload firmware directory
+    - name: 上传固件文件
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
