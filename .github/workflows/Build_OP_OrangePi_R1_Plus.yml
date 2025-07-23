@@ -50,6 +50,7 @@ jobs:
         echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
         echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        echo 'src-git openclash https://github.com/vernesong/OpenClash.git;master' >> feeds.conf.default
         echo "status=success" >> ${GITHUB_OUTPUT}
 
     - name: Setup disk space
@@ -66,8 +67,8 @@ jobs:
       if: steps.clone.outputs.status == 'success'
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.137/' feeds/luci/applications/luci-app-openclash/Makefile
-        ./scripts/feeds install -a
+        rm -rf feeds/luci/applications/luci-app-openclash
+        ./scripts/feeds install -a -f
 
     - name: Configuration Customization
       run: |
