@@ -108,7 +108,7 @@ jobs:
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
-        cd openwrt | make defconfig
+        cd openwrt
         if [[ "${{ inputs.wifi }}" == "false" ]]; then
             sed -i 's/CONFIG_PACKAGE_kmod-aic8800s=y/# CONFIG_PACKAGE_kmod-aic8800s is not set/' openwrt/.config
         fi
