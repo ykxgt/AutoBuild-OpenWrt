@@ -10,9 +10,8 @@ on:
         default: "6.12.x"
         type: choice
         options:
-          - latest
           - 6.12.x
-          - test
+          - 6.6.x
 
       log_switch:
         description: "编译日志开关"
@@ -101,22 +100,17 @@ jobs:
 
     - name: Configuration Customization
       run: |
-        if [[ "${{ inputs.device_config }}" == "latest" ]]; then
-            CONFIG_FILE="config/MangoPi_M28C.config"
-        elif [[ "${{ inputs.device_config }}" == *"6.12.x"* ]]; then
-            CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"
+        if [[ "${{ inputs.device_config }}" == "6.12.x" ]]; then
+            CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"     
         else
-            CONFIG_FILE="config/MangoPi-6.12.x-test.config"
+            CONFIG_FILE="config/MangoPi_M28C.config" 
         fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
-        ls -a
-        cd openwrt
-        ls -a
-        make defconfig
+        cd openwrt | make defconfig
         if [[ "${{ inputs.wifi }}" == "false" ]]; then
-            sed -i 's/CONFIG_PACKAGE_kmod-aic8800s=y/# CONFIG_PACKAGE_kmod-aic8800s is not set/' .config
+            sed -i 's/CONFIG_PACKAGE_kmod-aic8800s=y/# CONFIG_PACKAGE_kmod-aic8800s is not set/' openwrt/.config
         fi
         
     - name: Download package
