@@ -103,7 +103,7 @@ jobs:
         if [[ "${{ inputs.device_config }}" == "6.12.x" ]]; then
             CONFIG_FILE="config/MangoPi_M28C-6.12.x.config"     
         else
-            CONFIG_FILE="config/MangoPi_M28C.config" 
+            CONFIG_FILE="config/MangoPi_M28C-6.6.x.config" 
         fi
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
