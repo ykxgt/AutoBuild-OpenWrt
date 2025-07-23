@@ -141,7 +141,7 @@ jobs:
         --------------------------
         设备: MangoPi M28C
         时间: $(date +"%Y-%m-%d %H:%M")
-        内核: $(grep 'LINUX_VERSION-' openwrt/.config | cut -d= -f2)
+        内核: $(grep '6_12' openwrt/.config | cut -d= -f2)
         插件：qmodem，openclash，passwall等等
         EOF
 
