@@ -50,15 +50,17 @@ jobs:
         echo "status=success" >> ${GITHUB_OUTPUT}
         
     - name: Clone source code
-      id: codes
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
         cd openwrt
         echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
-        # echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
-        # echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
-        # echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
-
+        echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
+        echo 'src-git nas https://github.com/linkease/nas-packages.git;master' >> feeds.conf.default
+        echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
+        echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >> "feeds.conf.default"
+        echo "src-git fancontrol https://github.com/rockjake/luci-app-fancontrol.git" >> "feeds.conf.default"
+        
     - name: Free up disk space
       run: |
         sudo mkdir -p /mnt/openwrt/{dl,staging_dir,build_dir}
@@ -66,13 +68,15 @@ jobs:
         ln -sfn /mnt/openwrt/dl openwrt/dl
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
+        df -H
             
     - name: Update & Install feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        sed -i 's/PKG_VERSION:=0.46.033/PKG_VERSION:=0.46.086/' feeds/luci/applications/luci-app-openclash/Makefile
-        ./scripts/feeds install -a
+        rm -rf feeds/luci/applications/luci-app-openclash
+        cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
+        ./scripts/feeds install -a -f
         
     - name: Configuration Customization
       run: |
@@ -82,16 +86,13 @@ jobs:
         cd openwrt && make defconfig
         
     - name: Download package
-      id : download
+      working-directory: ./openwrt
       run: |
-        cd openwrt/
         make download -j$(nproc) || { echo "Download failed"; exit 1; }
         find dl -size -1024c -delete
-        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Compile the OpenWrt
       id: compile
-      if: steps.download.outputs.status == 'success'
       run: |
         cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "true" ]]; then
@@ -131,6 +132,7 @@ jobs:
         分支: $REPO_BRANCH
         时间: $(date +"%Y-%m-%d %H:%M")
         特性: openclash以及qmodem相关插件
+        内核：6.12.X
         EOF
 
     - name: Upload firmware to release
