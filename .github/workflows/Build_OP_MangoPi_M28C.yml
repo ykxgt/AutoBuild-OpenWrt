@@ -72,6 +72,7 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+        cp patches/rk3528-mangopi-m28c.dts openwrt/target/linux/rockchip/files/arch/arm64/boot/dts/rockchip/rk3528-mangopi-m28c.dts
         git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
         cd openwrt
         echo 'src-git Qmodem https://github.com/FUjr/QModem.git;main' >> feeds.conf.default
