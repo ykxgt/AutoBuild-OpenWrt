@@ -100,7 +100,6 @@ jobs:
         rm -rf feeds/luci/applications/luci-app-openclash
         cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
         ./scripts/feeds install -a -f
-        ./scripts/feeds install -f -p helloworld
 
     - name: Configuration Customization
       run: |
