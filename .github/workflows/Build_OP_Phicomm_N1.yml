@@ -45,7 +45,6 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
 
     - name: Setup disk space
       run: |
@@ -59,9 +58,7 @@ jobs:
       working-directory: ./openwrt
       run: |        
         ./scripts/feeds update -a
-        rm -rf feeds/luci/applications/luci-app-openclash
-        cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
-        ./scripts/feeds install -a -f
+        ./scripts/feeds install -a
 
     - name: Configuration Customization
       run: |
