@@ -1,4 +1,4 @@
-name: Build_MangoPi_M28C
+name: Build_MangoPi_M28C-qmodem
 
 on: 
   repository_dispatch:
@@ -81,6 +81,10 @@ jobs:
         echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
         echo "src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main" >> "feeds.conf.default"
         echo "src-git fancontrol https://github.com/rockjake/luci-app-fancontrol.git" >> "feeds.conf.default"
+        cd package
+        mkdir wechatpush
+        cd wechatpush
+        git clone https://github.com/tty228/luci-app-wechatpush.git luci-app-wechatpush
         echo "status=success" >> ${GITHUB_OUTPUT}
         
     - name: Free up disk space
