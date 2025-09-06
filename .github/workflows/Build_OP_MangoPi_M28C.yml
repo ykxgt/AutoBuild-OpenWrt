@@ -172,6 +172,7 @@ jobs:
         分支: $REPO_BRANCH
         使用${{ inputs.device_config }}插件
         EOF
+        echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
