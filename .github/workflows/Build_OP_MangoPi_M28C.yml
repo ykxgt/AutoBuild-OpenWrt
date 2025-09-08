@@ -71,9 +71,9 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
-            REPO_URL: https://github.com/coolsnowwolf/lede     
+            REPO_URL="https://github.com/coolsnowwolf/lede"
         else
-            REPO_URL: https://github.com/LeeHe-gif/lede 
+            REPO_URL="https://github.com/LeeHe-gif/lede"
         fi
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cp patches/rk3528-mangopi-m28c.dts openwrt/target/linux/rockchip/files/arch/arm64/boot/dts/rockchip/rk3528-mangopi-m28c.dts
