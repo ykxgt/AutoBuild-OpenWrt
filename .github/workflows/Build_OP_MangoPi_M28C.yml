@@ -32,7 +32,6 @@ on:
           - false
 
 env:
-  REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -71,6 +70,11 @@ jobs:
       id: codes
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
+        if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
+            REPO_URL: https://github.com/coolsnowwolf/lede     
+        else
+            REPO_URL: https://github.com/LeeHe-gif/lede 
+        fi
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cp patches/rk3528-mangopi-m28c.dts openwrt/target/linux/rockchip/files/arch/arm64/boot/dts/rockchip/rk3528-mangopi-m28c.dts
         git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
@@ -85,7 +89,7 @@ jobs:
         if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
             sed -i 's/^#src-git qmodem/src-git qmodem/' feeds.conf.default
         else
-            echo 'src-git 5GModemSupport https://github.com/Siriling/5G-Modem-Support.git' >> feeds.conf.default 
+            echo 'src-git 5GModemSupport https://github.com/LeeHe-gif/5G-Modem-Support.git' >> feeds.conf.default 
         fi
         echo "status=success" >> ${GITHUB_OUTPUT}
         
