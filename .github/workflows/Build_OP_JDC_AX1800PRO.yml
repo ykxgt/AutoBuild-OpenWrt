@@ -128,7 +128,7 @@ jobs:
         Build Date: $(date +"%Y-%m-%d %H:%M")
         Source: $REPO_URL
         Branch: $REPO_BRANCH
-        Kernel: $(grep '6_12' openwrt/.config | cut -d= -f2)
+        Kernel: 6.12.X
         EOF
 
     - name: Publish release
