@@ -111,7 +111,7 @@ jobs:
       run: |
         if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
             CONFIG_FILE="config/MangoPi_M28C-qmodem.config"
-        if [[ "${{ inputs.device_config }}" == "qmodembig" ]]; then
+        else if [[ "${{ inputs.device_config }}" == "qmodembig" ]]; then
             CONFIG_FILE="config/MangoPi_M28C-qmodem-big.config" 
         else
             CONFIG_FILE="config/MangoPi_M28C-modem.config" 
