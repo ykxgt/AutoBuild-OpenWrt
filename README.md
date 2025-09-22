@@ -15,26 +15,28 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
 
 在此感谢KFERMercer的出色工作：[KFERMercer/OpenWrt-CI](https://github.com/KFERMercer/OpenWrt-CI)
 
-## 用法
+## 使用方法以及注意事项：
 
-🔥🔥[视频教程(国语)](https://youtu.be/9YO7nxNry-4)📺🎉
+[![视频教程]](https://youtu.be/9YO7nxNry-4)
 
 **1. 前提**
   - 登陆 [GitHub Actions](https://github.com/features/actions/signup)
   - Fork [这个仓库](https://github.com/LeeHe-gif/AutoBuild-OpenWrt)
     
 **2. 编译固件**
-  - 点击repo顶部的 `[.github/workflows]`文件夹，您可以看到几个工作流文件，每个文件对应一个特定架构的设备。
+  - 点击repo顶部的[.github/workflows](https://github.com/LeeHe-gif/AutoBuild-OpenWrt/tree/master/.github/workflows)文件夹，您可以看到几个工作流文件，每个文件对应一个特定架构的设备。
 
-  - 点击进入***`Action`*** 能看到左侧的 “All workflow”，选择列表里您要编译的设备，然后转到右侧的“run workflow”按钮，点击下拉菜单上的绿色按钮“运行工作流“就行了！！！
+  - config文件需要您本地生成，并以[config](https://github.com/LeeHe-gif/AutoBuild-OpenWrt/tree/master/config)中的设备的文件命命名并名上传。
 
-  - 构建将自动启动。可以在“Actions”页面上查看进度。
+  - 接着点击进入***`Action`*** 能看到左侧的 “All workflow”，在右侧`All workflows`选择列表里您要编译的设备，然后转到右侧的“run workflow”按钮，您可以看到`Compile log switch`选项，如果打开该选项，工作流则会以`make -j1 V=s`选项进行编译，以便在第一遍正常多核编译失败时查看详细的日志，接着进行纠错。
 
-  - 构建完成后，会自动按照时间发布release，在release中下载对应格式的固件。
+  - 构建将自动启动。可以在“Actions”页面上查看进度，按照插件的数量大约需要1小时至2小时甚至更多时间。
+
+  - 构建完成后，会自动按照时间发布release，在release中下载固件。
 
   - 默认Web管理IP:`192.168.1.1`，用户名`root`，没有登陆密码。
 
-  - 插件默认有[OpenClash](https://github.com/vernesong/OpenClash)[Openlist](https://github.com/OpenListTeam/OpenList),带usb接口的装[Qmodem](https://github.com/FUjr/QModem),M28C等带usb接口的软路由加MT7921u驱动，
+  - 插件默认有[OpenClash](https://github.com/vernesong/OpenClash)、[Openlist](https://github.com/OpenListTeam/OpenList),[istore](https://github.com/linkease/istore)带usb接口的装[Qmodem](https://github.com/FUjr/QModem),M28C等带usb接口的软路由加MT7921u的usb3.0的wifi6网卡驱动。
   - **3. 工作流已适配设备列表**
   - Arcadyan_AW1000
   - CMCC_RAX3000M(nand/emmc)
