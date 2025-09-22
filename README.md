@@ -6,7 +6,7 @@
 
 I18N: [English](README_EN.md) | [简体中文](README.md)
 
-使用github actions 编译lede的OpenWrt [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)   
+使用github actions 编译lean的OpenWrt [Lean's OpenWrt](https://github.com/coolsnowwolf/lede)   
 
 （复刻自[esirplayground/AutoBuild-OpenWrt](https://github.com/esirplayground/AutoBuild-OpenWrt)
 
@@ -33,3 +33,25 @@ I18N: [English](README_EN.md) | [简体中文](README.md)
   - 构建完成后，会自动按照时间发布release，在release中下载对应格式的固件。
 
   - 默认Web管理IP:`192.168.1.1`，用户名`root`，没有登陆密码。
+
+  - 插件默认有[OpenClash](https://github.com/vernesong/OpenClash)[Openlist](https://github.com/OpenListTeam/OpenList),带usb接口的装[Qmodem](https://github.com/FUjr/QModem),M28C等带usb接口的软路由加MT7921u驱动，
+  - **3. 工作流已适配设备列表**
+  - Arcadyan_AW1000
+  - CMCC_RAX3000M(nand/emmc)
+  - CMCC_XR30(nand)
+  - CUDY_TR3000
+  - GeHua_GHL-R-001
+  - HILINK_H29K
+  - QIHOO_360_T7
+  - JDC_AX1800PRO
+  - MangPi_M28C
+  - MangPi_M28K
+  - Netcore_N60PRO
+  - OrangePi_R1_Plus
+  - PHICOMM_K2G
+  - PHICOMM_N1
+  - README_AX3000
+  - X86通用设备
+  - XIAOMI_AX3000T
+  - XIAOMI_R3
+  - XIAOMI_R3G
