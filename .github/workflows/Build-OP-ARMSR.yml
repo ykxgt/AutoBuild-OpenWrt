@@ -14,9 +14,9 @@ on:
           - false
 
 env:
-  CONFIG_FILE: 'config/armsr-op.config'
-  REPO_URL: https://github.com/openwrt/openwrt.git
-  REPO_BRANCH: openwrt-23.05
+  CONFIG_FILE: 'config/lede-armsr.config'
+  REPO_URL: https://github.com/coolsnowwolf/lede.git
+  REPO_BRANCH: master
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
@@ -55,7 +55,7 @@ jobs:
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        # git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
+        git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
         echo "status=success" >> ${GITHUB_OUTPUT}
         
     - name: Free up disk space
@@ -71,13 +71,13 @@ jobs:
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        # rm -rf feeds/luci/applications/luci-app-openclash
-        # cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
+        rm -rf feeds/luci/applications/luci-app-openclash
+        cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
         ./scripts/feeds install -a
 
     - name: Configuration Customization
       run: |
-        chmod +x ./op-customize.sh && ./op-customize.sh
+        chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
         
@@ -123,7 +123,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
-        🚀 OpenWrt 固件编译结果
+        🚀 LEDE 固件编译结果
         ----------------------
         设备: ARMSR
         时间: $(date +"%Y-%m-%d %H:%M")
