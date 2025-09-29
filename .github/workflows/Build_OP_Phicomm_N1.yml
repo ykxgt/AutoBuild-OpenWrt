@@ -61,7 +61,7 @@ jobs:
         ./scripts/feeds update -a
         rm -rf feeds/luci/applications/luci-app-openclash
         cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
-        ./scripts/feeds install -a -f
+        ./scripts/feeds install -a
 
     - name: Configuration Customization
       run: |
@@ -69,7 +69,7 @@ jobs:
           echo "❌ Error: Config file ${CONFIG_FILE} not found!"
           exit 1
         fi
-        chmod +x ./customize.sh && ./customize.sh
+        # chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
         cd openwrt && make defconfig
@@ -116,7 +116,7 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
-        🚀 OpenWrt Firmware for Phicomm N1
+        🚀 LEDE Firmware for Phicomm N1
         ------------------------------------
         Build Date: $(date +"%Y-%m-%d %H:%M")
         Source: $REPO_URL
