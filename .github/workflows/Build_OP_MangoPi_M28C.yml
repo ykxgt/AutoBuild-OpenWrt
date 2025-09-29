@@ -74,6 +74,7 @@ jobs:
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         cp patches/rk3528-mangopi-m28c.dts openwrt/target/linux/rockchip/files/arch/arm64/boot/dts/rockchip/rk3528-mangopi-m28c.dts
         git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
+        git clone --depth 1 https://github.com/EasyTier/luci-app-easytier.git easytier
         cd openwrt
         sed -i 's/^#src-git helloworld/src-git helloworld/' feeds.conf.default
         echo 'src-git istore https://github.com/linkease/istore;main' >> feeds.conf.default
@@ -104,12 +105,13 @@ jobs:
         ./scripts/feeds update -a
         rm -rf feeds/luci/applications/luci-app-openclash
         cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
+        cp -r ../easytier package/
         ./scripts/feeds install -a -f
 
     - name: Configuration Customization
       run: |
         if [[ "${{ inputs.device_config }}" == "qmodem" ]]; then
-            CONFIG_FILE="config/MangoPi_M28C-qmodem.config"     
+            CONFIG_FILE="config/m28c.config"     
         else
             CONFIG_FILE="config/MangoPi_M28C-modem.config" 
         fi
