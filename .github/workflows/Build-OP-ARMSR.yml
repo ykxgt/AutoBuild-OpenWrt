@@ -1,4 +1,4 @@
-name: Build_CMCC_XR30_NAND
+name: Build_ARMSR
 
 on: 
   repository_dispatch:
