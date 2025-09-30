@@ -72,7 +72,6 @@ jobs:
         # chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
-        cd openwrt && make defconfig
         
     - name: Download packages
       working-directory: ./openwrt
