@@ -14,7 +14,7 @@ on:
           - false
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'config/JDC_AX1800PRO.config'
+  CONFIG_FILE: 'config/ax1800pro.config'
   REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
@@ -45,14 +45,10 @@ jobs:
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
+        git clone --depth 1 https://github.com/EasyTier/luci-app-easytier.git easytier
         cd openwrt
-        cat <<EOF >> feeds.conf.default
-        src-git modem https://github.com/FUjr/QModem.git;main
-        src-git istore https://github.com/linkease/istore;main
-        src-git nas https://github.com/linkease/nas-packages.git;master
-        src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
-        src-git nikki https://github.com/nikkinikki-org/OpenWrt-nikki.git;main
-        EOF
+        sed -i 's/^#src-git helloworld/src-git helloworld/' feeds.conf.default
+        sed -i 's/^#src-git qmodem/src-git qmodem/' feeds.conf.default
 
     - name: Setup disk space
       run: |
@@ -68,6 +64,7 @@ jobs:
         ./scripts/feeds update -a
         rm -rf feeds/luci/applications/luci-app-openclash
         cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
+        cp -r ../easytier package/
         ./scripts/feeds install -a -f
 
     - name: Configure build
