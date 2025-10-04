@@ -47,7 +47,6 @@ jobs:
         git clone --depth 1 https://github.com/EasyTier/luci-app-easytier.git easytier
         cd openwrt
         sed -i 's/^#src-git helloworld/src-git helloworld/' feeds.conf.default
-        sed -i 's/^#src-git qmodem/src-git qmodem/' feeds.conf.default
 
     - name: Setup disk space
       run: |
