@@ -5,18 +5,18 @@ on:
   workflow_dispatch:
     inputs:
       log_switch:
-        description: "Compile log switch"
+        description: "编译日志开关"
         required: false
         default: "false"
         type: boolean
         options:
           - true
           - false
+
+
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
-  CONFIG_FILE: 'config/ax1800pro.config'
   REPO_BRANCH: master
-  UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
@@ -27,67 +27,77 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@master
 
-    - name: Initialize environment
+    - name: Free disk space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+
+    - name: space usage check  
+      run: |
+        df -H
+
+    - name: Initialization environment
       id: init
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
         sudo -E apt-get -y update
+        sudo -E apt-get full-upgrade -y
         sudo -E apt-get -y install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache clang cmake cpio curl device-tree-compiler flex gawk gcc-multilib g++-multilib gettext genisoimage git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool llvm lrzsz libnsl-dev ninja-build p7zip p7zip-full patch pkgconf python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
         sudo timedatectl set-timezone "${TZ}"
         echo "status=success" >> ${GITHUB_OUTPUT}
         
     - name: Clone source code
-      id: clone
+      id: codes
       if: ${{ steps.init.outputs.status }} == 'success' && !cancelled()
       run: |
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
-        git clone --depth 1 https://github.com/vernesong/OpenClash.git OpenClash
         git clone --depth 1 https://github.com/EasyTier/luci-app-easytier.git easytier
         cd openwrt
         sed -i 's/^#src-git helloworld/src-git helloworld/' feeds.conf.default
         sed -i 's/^#src-git qmodem/src-git qmodem/' feeds.conf.default
-
-    - name: Setup disk space
+        
+        echo "status=success" >> ${GITHUB_OUTPUT}
+        
+    - name: Free up disk space
       run: |
-        sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
+        sudo mkdir -p /mnt/openwrt/{dl,staging_dir,build_dir}
         sudo chown -R $USER:$GROUPS /mnt/openwrt
         ln -sfn /mnt/openwrt/dl openwrt/dl
         ln -sfn /mnt/openwrt/staging_dir openwrt/staging_dir
         ln -sfn /mnt/openwrt/build_dir openwrt/build_dir
-        
-    - name: Update feeds
+        df -H
+
+    - name: Update & Install feeds
       working-directory: ./openwrt
       run: |
         ./scripts/feeds update -a
-        rm -rf feeds/luci/applications/luci-app-openclash
-        cp -r ../OpenClash/luci-app-openclash feeds/luci/applications/
         cp -r ../easytier package/
-        ./scripts/feeds install -a -f
+        ./scripts/feeds install -a
 
-    - name: Configure build
+    - name: Configuration Customization
       run: |
-        if [[ ! -f "${CONFIG_FILE}" ]]; then
-          echo "❌ Error: Config file ${CONFIG_FILE} not found!"
-          exit 1
-        fi
+        CONFIG_FILE="config/ax1800pro.config" 
         chmod +x ./customize.sh && ./customize.sh
         [[ -d "files" ]] && mv -f files openwrt/files
         cp -fv "${CONFIG_FILE}" openwrt/.config
-        cd openwrt && make defconfig
+        cd openwrt
         
-    - name: Download packages
+        
+    - name: Download package
       working-directory: ./openwrt
       run: |
-        make download -j$(nproc) || { echo "❌ Download failed"; exit 1; }
+        make download -j$(nproc) || { echo "Download failed"; exit 1; }
         find dl -size -1024c -delete
 
-    - name: Compile firmware
+    - name: Compile the OpenWrt
       id: compile
-      working-directory: ./openwrt
       run: |
+        cd openwrt/
         if [[ "${{ inputs.log_switch }}" == "true" ]]; then
             make -j1 V=s
         else
@@ -96,17 +106,17 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
-        echo "status=success" >> ${GITHUB_OUTPUT}
-
+        echo "status=success" >> $GITHUB_OUTPUT
+        
     - name: Organize files
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && steps.compile.outputs.status == 'success'
       run: |
-        cd openwrt/bin/targets/*/* || { echo "❌ 固件目录不存在"; exit 1; }
-        rm -rf packages
+        cd openwrt/bin/targets/*/*
+        # rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
-        
+
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
@@ -114,31 +124,32 @@ jobs:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}/*
 
-    - name: Create release
-      id: release
+    - name: Generate release tag
+      id: tag
       if: env.UPLOAD_RELEASE == 'true' && steps.organize.outputs.status == 'success'
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         cat <<EOF > release.txt
-        🚀 OpenWrt Firmware for JDC AX1800PRO
-        -----------------------------------
-        Build Date: $(date +"%Y-%m-%d %H:%M")
-        Source: $REPO_URL
-        Branch: $REPO_BRANCH
-        Kernel: 6.12.X
+        🚀 LEDE 固件编译结果
+        ----------------------
+        设备: JDC_AX1800PRO
+        时间: $(date +"%Y-%m-%d %H:%M")
+        源码仓库: $REPO_URL
+        分支: $REPO_BRANCH
         EOF
+        echo "status=success" >> $GITHUB_OUTPUT
 
-    - name: Publish release
+    - name: Upload firmware to release
       uses: softprops/action-gh-release@v1
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.release.outputs.release_tag }}
+        tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: ${{ env.FIRMWARE }}/*
 
-    - name: Cleanup workflows
+    - name: Delete workflow runs
       uses: LeeHe-gif/delete-workflow-runs@main
       with:
         retain_days: 1
